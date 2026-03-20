@@ -40,6 +40,10 @@ app.get('/api/health', (req, res) => {
 const authRoute = require('./routes/authRoute.js');
 app.use('/api/auth', authRoute);
 
+// Board Routes
+const boardRoute = require('./routes/boardRoute.js');
+app.use('/api/boards', boardRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
