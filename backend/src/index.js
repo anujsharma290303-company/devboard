@@ -44,6 +44,10 @@ app.use('/api/auth', authRoute);
 const boardRoute = require('./routes/boardRoute.js');
 app.use('/api/boards', boardRoute);
 
+// Column Routes
+const columnRoute = require('./routes/columnRoute.js');
+app.use('/api', columnRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
