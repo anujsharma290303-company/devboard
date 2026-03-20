@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BoardRole {
+  owner
+  admin
+  editor
+  viewer
+}
+
+enum CardPriority {
+  low
+  medium
+  high
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  displayName  String   @map("display_name")
+  avatarPath   String?  @map("avatar_path")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  ownedBoards   Board[]       @relation("BoardOwner")
+  memberBoards  BoardMember[] @relation("UserMemberships")
+  assignedCards Card[]        @relation("CardAssignees")
+  createdCards  Card[]        @relation("CardCreators")
+  comments Comment[]     
+  attachments Attachment[]
+  inviteTokens InviteToken[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Board {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  emoji       String   @default("📋")
+  ownerId     String   @map("owner_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  owner   User          @relation("BoardOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members BoardMember[] @relation("BoardMemberships")
+  columns Column[]
+  labels  Label[]
+  inviteTokens InviteToken[]
+  
+  @@map("boards")
+}
+
+model BoardMember {
+  id        Int       @id @default(autoincrement())
+  boardId   String    @map("board_id")
+  userId    String    @map("user_id")
+  role      BoardRole @default(viewer)
+  invitedAt DateTime  @default(now()) @map("invited_at")
+  joinedAt  DateTime? @map("joined_at")
+
+  board Board @relation("BoardMemberships", fields: [boardId], references: [id], onDelete: Cascade)
+  user  User  @relation("UserMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, userId])
+  @@map("board_members")
+}
+
+model Column {
+  id        String   @id @default(uuid())
+  title     String
+  boardId   String   @map("board_id")
+  position  Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cards Card[] 
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@map("columns")
+}
+
+model Card {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  columnId    String       @map("column_id")
+  position    Int
+  priority    CardPriority @default(medium)
+  dueDate     DateTime?    @map("due_date")
+  assigneeId  String?      @map("assignee_id")
+  createdById String       @map("created_by_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  column    Column @relation( fields: [columnId], references: [id], onDelete: Cascade)
+  assignee  User?  @relation("CardAssignees", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy User   @relation("CardCreators", fields: [createdById], references: [id])
+  cardLabel CardLabel[]
+  comment   Comment[]
+  attachment Attachment[]
+
+  @@map("cards")
+}
+
+model Label{
+    id Int @id @default(autoincrement())
+    name String
+    color String @default("#FF5733")
+    boardId String @map("board_id")
+
+    board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    cardLabel CardLabel[]
+
+   @@map("labels")
+}
+
+model CardLabel{
+    cardId String @map("card_id")
+    labelId Int @map("label_id")
+    @@id([cardId, labelId])
+
+    card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+    @@map("card_labels")
+}
+
+model Comment{
+    id String @id @default(uuid())
+    cardId String @map("card_id")
+    userId String @map("user_id")
+    content String
+    parentId String? @map("parent_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+    replies  Comment[] @relation("CommentReplies")
+
+    @@map("comments")
+}
+
+model Attachment{
+    id String @id @default(uuid())
+    cardId String @map("card_id")
+    uploadedById String @map("uploaded_by_id")
+    originalName String @map("original_name")
+    storedPath String @map("stored_path")
+    mimeType String @map("mime_type")
+    sizeBytes Int @map("size_bytes")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    uploadedBy User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+
+    @@map("attachments")
+}
+
+
+model InviteToken{
+    id Int @id @default(autoincrement())
+    boardId String @map("board_id")
+    email String
+    role BoardRole @default(viewer)
+    token String @unique
+    expiresAt DateTime @map("expires_at")
+    used Boolean @default(false)
+    createdById String @map("created_by_id")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+    createdBy User @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+    @@map("invite_tokens")
+}
+
+
+model RefreshToken{
+    id Int @id @default(autoincrement())
+    userId String @map("user_id")
+    token String @unique
+    expiresAt DateTime @map("expires_at")
+    revoked Boolean @default(false)
+    createdAt DateTime @default(now()) @map("created_at")
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("refresh_tokens")
+}
