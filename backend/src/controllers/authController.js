@@ -1,21 +1,44 @@
+// ============================================================================
+// Dependencies
+// ============================================================================
+
 const bcrypt = require("bcryptjs");
 const prismaClient = require("../config/prisma");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
+// ============================================================================
+// Configuration & Constants
+// ============================================================================
+
 const REFRESH_TOKEN_EXPIRY_DAYS = Number(
   process.env.REFRESH_TOKEN_EXPIRY_DAYS || 7,
 );
 
-// Persist only a hash of refresh tokens so leaked DB data cannot be reused directly.
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Hash a token using SHA-256
+ * Purpose: Persist only hashes in DB so leaked data cannot be reused directly
+ */
 const hashToken = (token) =>
   crypto.createHash("sha256").update(token).digest("hex");
 
+/**
+ * Create a JWT access token signed with JWT_SECRET
+ */
 const createAccessToken = (userId) =>
-  jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-  });
+  jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
+/**
+ * Generate and persist a refresh token in the database
+ * Returns the unhashed token for client use; DB stores hashed version
+ */
 const issueRefreshToken = async (userId) => {
   const refreshToken = crypto.randomBytes(64).toString("hex");
   const expiresAt = new Date(
@@ -33,6 +56,9 @@ const issueRefreshToken = async (userId) => {
   return refreshToken;
 };
 
+/**
+ * Send a standardized auth response with tokens and optional user data
+ */
 const sendAuthResponse = ({ res, statusCode, accessToken, refreshToken, user }) => {
   res.status(statusCode).json({
     token: accessToken,
@@ -42,27 +68,40 @@ const sendAuthResponse = ({ res, statusCode, accessToken, refreshToken, user }) 
   });
 };
 
+// ============================================================================
+// Auth Controllers
+// ============================================================================
+
+/**
+ * POST /register
+ * Create a new user with hashed password and issue tokens
+ */
 exports.register = async (req, res) => {
   const { displayName, email, password } = req.body;
 
+  // Validate required fields
   if (!displayName || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "displayName, email and password are required" });
+    return res.status(400).json({
+      message: "displayName, email and password are required",
+    });
   }
 
   try {
+    // Check if user already exists
     const existingUser = await prismaClient.user.findUnique({
       where: { email },
     });
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
+
+    // Hash password and create user
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prismaClient.user.create({
       data: { displayName, email, passwordHash: hashedPassword },
     });
 
+    // Issue tokens
     const refreshToken = await issueRefreshToken(user.id);
     const accessToken = createAccessToken(user.id);
 
@@ -79,24 +118,34 @@ exports.register = async (req, res) => {
   }
 };
 
+/**
+ * POST /login
+ * Authenticate user with email/password and issue tokens
+ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  // Validate required fields
   if (!email || !password) {
-    return res.status(400).json({ message: "email and password are required" });
+    return res.status(400).json({
+      message: "email and password are required",
+    });
   }
 
   try {
+    // Find user by email
     const user = await prismaClient.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Issue tokens
     const refreshToken = await issueRefreshToken(user.id);
     const accessToken = createAccessToken(user.id);
 
@@ -113,6 +162,10 @@ exports.login = async (req, res) => {
   }
 };
 
+/**
+ * POST /logout
+ * Revoke all refresh tokens for the authenticated user
+ */
 exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -121,6 +174,7 @@ exports.logout = async (req, res) => {
   }
 
   try {
+    // Delete the refresh token from database
     await prismaClient.refreshToken.deleteMany({
       where: { token: hashToken(refreshToken) },
     });
@@ -131,6 +185,10 @@ exports.logout = async (req, res) => {
   }
 };
 
+/**
+ * POST /refresh-token
+ * Rotate refresh token and issue new access + refresh tokens
+ */
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -139,6 +197,7 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
+    // Find stored refresh token
     const storedToken = await prismaClient.refreshToken.findUnique({
       where: { token: hashToken(refreshToken) },
     });
@@ -146,6 +205,8 @@ exports.refreshToken = async (req, res) => {
     if (!storedToken) {
       return res.status(401).json({ message: "Invalid refresh token" });
     }
+
+    // Check if token is revoked or expired
     if (storedToken.revoked || storedToken.expiresAt < new Date()) {
       return res.status(401).json({ message: "Refresh token expired" });
     }
@@ -153,7 +214,7 @@ exports.refreshToken = async (req, res) => {
     const userId = storedToken.userId;
     const newAccessToken = createAccessToken(userId);
 
-    // Rotate refresh token: invalidate old one before issuing a new one.
+    // Token rotation: invalidate old token before issuing new one
     await prismaClient.refreshToken.delete({ where: { id: storedToken.id } });
     const newRefreshToken = await issueRefreshToken(userId);
 
