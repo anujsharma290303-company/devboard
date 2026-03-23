@@ -6,6 +6,8 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController.js");
 const authenticate = require("../middleware/auth.js");
+const { validate } = require("../middleware/validate.js");
+const { registerSchema, loginSchema, refreshTokenSchema, logoutSchema } = require("../validators/authValidator.js");
 
 // ============================================================================
 // Auth Routes
@@ -16,21 +18,21 @@ const authenticate = require("../middleware/auth.js");
  * Public endpoint to create a new user account
  * Body: { displayName, email, password }
  */
-router.post("/register", authController.register);
+router.post("/register", validate(registerSchema), authController.register);
 
 /**
  * POST /api/auth/login
  * Public endpoint to authenticate user and receive tokens
  * Body: { email, password }
  */
-router.post("/login", authController.login);
+router.post("/login", validate(loginSchema), authController.login);
 
 /**
  * POST /api/auth/refresh-token
  * Public endpoint to rotate refresh tokens
  * Body: { refreshToken }
  */
-router.post("/refresh-token", authController.refreshToken);
+router.post("/refresh-token", validate(refreshTokenSchema), authController.refreshToken);
 
 /**
  * POST /api/auth/logout
@@ -38,6 +40,6 @@ router.post("/refresh-token", authController.refreshToken);
  * Headers: Authorization: Bearer <accessToken>
  * Body: { refreshToken }
  */
-router.post("/logout", authenticate, authController.logout);
+router.post("/logout", authenticate, validate(logoutSchema), authController.logout);
 
 module.exports = router;

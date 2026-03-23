@@ -6,6 +6,8 @@ const express = require("express");
 const router = express.Router();
 const boardController = require("../controllers/boardController.js");
 const authenticate = require("../middleware/auth.js");
+const { validate } = require("../middleware/validate.js");
+const { createBoardSchema, updateBoardSchema } = require("../validators/boardValidator.js");
 
 // ============================================================================
 // Board Routes - All Protected with Authentication
@@ -25,7 +27,7 @@ router.get("/", authenticate, boardController.getBoards);
  * Headers: Authorization: Bearer <accessToken>
  * Body: { name, description?, emoji? }
  */
-router.post("/", authenticate, boardController.createBoard);
+router.post("/", authenticate, validate(createBoardSchema), boardController.createBoard);
 
 /**
  * GET /api/boards/:id
@@ -41,7 +43,7 @@ router.get("/:id", authenticate, boardController.getBoardById);
  * Headers: Authorization: Bearer <accessToken>
  * Body: { name?, description?, emoji? }
  */
-router.patch("/:id", authenticate, boardController.updateBoard);
+router.patch("/:id", authenticate, validate(updateBoardSchema), boardController.updateBoard);
 
 /**
  * DELETE /api/boards/:id

@@ -20,10 +20,7 @@ exports.createBoard = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const boardName = typeof name === "string" ? name.trim() : "";
-  if (!boardName) {
-    return res.status(400).json({ message: "Board name is required" });
-  }
+  const boardName = name.trim();
 
   const boardDescription =
     typeof description === "string" && description.trim()
@@ -271,22 +268,15 @@ exports.updateBoard = async (req, res) => {
   const { name, description, emoji } = req.body;
   const updateData = {};
 
-  // Validate and prepare update fields
-  if (typeof name === "string" && name.trim()) {
+  // Prepare update fields (request body is validated by middleware)
+  if (name !== undefined) {
     updateData.name = name.trim();
   }
-  if (typeof description === "string") {
+  if (description !== undefined) {
     updateData.description = description.trim() || null;
   }
-  if (typeof emoji === "string" && emoji.trim()) {
+  if (emoji !== undefined) {
     updateData.emoji = emoji.trim();
-  }
-
-  // Check if any fields are being updated
-  if (Object.keys(updateData).length === 0) {
-    return res
-      .status(400)
-      .json({ message: "At least one field (name, description, emoji) is required" });
   }
 
   try {

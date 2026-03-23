@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 // ============================================================================
 
 // CORS middleware - allow cross-origin requests
-app.use(cors());
+app.use(cors({ origin: process.env.CLIENT_URL }))
 
 // JSON parser with error handling
 app.use(express.json());

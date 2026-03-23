@@ -79,13 +79,6 @@ const sendAuthResponse = ({ res, statusCode, accessToken, refreshToken, user }) 
 exports.register = async (req, res) => {
   const { displayName, email, password } = req.body;
 
-  // Validate required fields
-  if (!displayName || !email || !password) {
-    return res.status(400).json({
-      message: "displayName, email and password are required",
-    });
-  }
-
   try {
     // Check if user already exists
     const existingUser = await prismaClient.user.findUnique({
@@ -125,13 +118,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Validate required fields
-  if (!email || !password) {
-    return res.status(400).json({
-      message: "email and password are required",
-    });
-  }
-
   try {
     // Find user by email
     const user = await prismaClient.user.findUnique({ where: { email } });
@@ -169,10 +155,6 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
 
-  if (!refreshToken) {
-    return res.status(400).json({ message: "refreshToken is required" });
-  }
-
   try {
     // Delete the refresh token from database
     await prismaClient.refreshToken.deleteMany({
@@ -191,10 +173,6 @@ exports.logout = async (req, res) => {
  */
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    return res.status(400).json({ message: "refreshToken is required" });
-  }
 
   try {
     // Find stored refresh token
