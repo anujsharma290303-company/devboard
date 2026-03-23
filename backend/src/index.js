@@ -56,6 +56,10 @@ app.use('/api', cardRoute);
 const commentRoute = require('./routes/commentRoute.js');
 app.use('/api', commentRoute);
 
+// Member Routes
+const memberRoute = require('./routes/memberRoute.js');
+app.use('/api', memberRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
