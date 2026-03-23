@@ -48,6 +48,10 @@ app.use('/api/boards', boardRoute);
 const columnRoute = require('./routes/columnRoute.js');
 app.use('/api', columnRoute);
 
+// Card Routes
+const cardRoute = require('./routes/cardRoute.js');
+app.use('/api', cardRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
