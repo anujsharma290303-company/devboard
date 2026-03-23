@@ -52,6 +52,10 @@ app.use('/api', columnRoute);
 const cardRoute = require('./routes/cardRoute.js');
 app.use('/api', cardRoute);
 
+// Comment Routes
+const commentRoute = require('./routes/commentRoute.js');
+app.use('/api', commentRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
