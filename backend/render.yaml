@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: devboard-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add your other environment variables here, e.g.:
+      # - key: DATABASE_URL
+      #   value: <your_database_url>
+    autoDeploy: true
