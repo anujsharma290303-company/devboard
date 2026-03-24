@@ -59,7 +59,13 @@ const issueRefreshToken = async (userId) => {
 /**
  * Send a standardized auth response with tokens and optional user data
  */
-const sendAuthResponse = ({ res, statusCode, accessToken, refreshToken, user }) => {
+const sendAuthResponse = ({
+  res,
+  statusCode,
+  accessToken,
+  refreshToken,
+  user,
+}) => {
   res.status(statusCode).json({
     token: accessToken,
     accessToken,
@@ -204,6 +210,88 @@ exports.refreshToken = async (req, res) => {
     });
   } catch (error) {
     console.error("Refresh token error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await prismaClient.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(200).json({
+        message: "If email exists, reset link sent",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = hashToken(resetToken);
+
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prismaClient.passwordResetToken.deleteMany({
+      where: { userId: user.id },
+    });
+
+    await prismaClient.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        token: hashedToken,
+        expiresAt,
+      },
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    console.log(`RESET LINK: ${resetUrl}`);
+
+    res.status(200).json({ message: "Reset link sent" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const hashedToken = hashToken(token);
+
+    const record = await prismaClient.passwordResetToken.findUnique({
+      where: { token: hashedToken },
+      include: { user: true },
+    });
+
+    if (!record || record.expiresAt < new Date()) {
+      return res.status(400).json({
+        message: "Invalid or expired token",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prismaClient.user.update({
+      where: { id: record.user.id },
+      data: { passwordHash: hashedPassword },
+    });
+
+    // delete token
+    await prismaClient.passwordResetToken.delete({
+      where: { id: record.id },
+    });
+
+    // 🔥 logout from all devices
+    await prismaClient.refreshToken.deleteMany({
+      where: { userId: record.user.id },
+    });
+
+    res.status(200).json({
+      message: "Password reset successful",
+    });
+
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -7,7 +7,20 @@ const router = express.Router();
 const authController = require("../controllers/authController.js");
 const authenticate = require("../middleware/auth.js");
 const { validate } = require("../middleware/validate.js");
-const { registerSchema, loginSchema, refreshTokenSchema, logoutSchema } = require("../validators/authValidator.js");
+const { registerSchema, loginSchema, refreshTokenSchema, logoutSchema, forgotPasswordSchema, resetPasswordSchema } = require("../validators/authValidator.js");
+/**
+ * POST /api/auth/forgot-password
+ * Public endpoint to request a password reset link
+ * Body: { email }
+ */
+router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
+
+/**
+ * POST /api/auth/reset-password
+ * Public endpoint to reset password using token
+ * Body: { token, newPassword } 
+ */
+router.post("/reset-password", validate(resetPasswordSchema), authController.resetPassword);
 
 // ============================================================================
 // Auth Routes

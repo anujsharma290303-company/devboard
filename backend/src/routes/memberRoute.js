@@ -11,10 +11,10 @@ const {
 
 // Invite a user to board
 router.post(
-  "/boards/:boardId/members/invite",
+  "/boards/:boardId/invite",
   authenticate,
   validate(inviteMemberSchema),
-  memberController.inviteMember,
+  memberController.inviteMember
 );
 
 // Accept invite token
@@ -24,11 +24,11 @@ router.post("/invites/:token/accept", authenticate, memberController.acceptInvit
 router.get("/boards/:boardId/members", authenticate, memberController.getMembers);
 
 // Update board member role (owner only)
-router.patch(
-  "/boards/:boardId/members/:userId/role",
+router.put(
+  "/boards/:boardId/members/:userId",
   authenticate,
   validate(updateMemberRoleSchema),
-  memberController.updateMemberRole,
+  memberController.updateMemberRole
 );
 
 // Remove board member (owner/admin)
