@@ -7,23 +7,29 @@ exports.inviteMember = async (req, res) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   if (!boardId) {
-    return res.status(400).json({ message: "Board ID is required" });
+    const error = new Error("Board ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   if (!email || typeof email !== "string" || !email.trim()) {
-    return res.status(400).json({ message: "Email is required" });
+    const error = new Error("Email is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const allowedRoles = ["admin", "editor", "viewer"];
   const normalizedRole = typeof role === "string" ? role.toLowerCase() : "";
   if (!allowedRoles.includes(normalizedRole)) {
-    return res.status(400).json({
-      message: `Invalid role. Must be one of: ${allowedRoles.join(", ")}`,
-    });
+    const error = new Error(`Invalid role. Must be one of: ${allowedRoles.join(", ")}`);
+    error.statusCode = 400;
+    throw error;
   }
 
   try {
@@ -38,9 +44,9 @@ exports.inviteMember = async (req, res) => {
     });
 
     if (!inviter) {
-      return res.status(403).json({
-        message: "Forbidden: Only board owners and admins can invite members",
-      });
+      const error = new Error("Forbidden: Only board owners and admins can invite members");
+      error.statusCode = 403;
+      throw error;
     }
 
     // Check email is not already a member
@@ -59,9 +65,9 @@ exports.inviteMember = async (req, res) => {
       });
 
       if (existingMember) {
-        return res.status(409).json({
-          message: "User with this email is already a board member",
-        });
+        const error = new Error("User with this email is already a board member");
+        error.statusCode = 409;
+        throw error;
       }
     }
 
@@ -82,7 +88,7 @@ exports.inviteMember = async (req, res) => {
     return res.status(201).json({ token, expiresAt });
   } catch (error) {
     console.error("Error creating invitation:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 

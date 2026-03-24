@@ -17,7 +17,9 @@ exports.createBoard = async (req, res) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const boardName = name.trim();
@@ -59,7 +61,7 @@ exports.createBoard = async (req, res) => {
     return res.status(201).json(board);
   } catch (error) {
     console.error("Error creating board:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -71,7 +73,9 @@ exports.createBoard = async (req, res) => {
 exports.getBoards = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const parsedLimit = Number.parseInt(req.query.limit, 10);
@@ -104,7 +108,7 @@ exports.getBoards = async (req, res) => {
     return res.status(200).json(boards);
   } catch (error) {
     console.error("Error fetching boards:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -117,12 +121,16 @@ exports.getBoards = async (req, res) => {
 exports.getBoardById = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const boardId = req.params.id?.trim();
   if (!boardId) {
-    return res.status(400).json({ message: "Board ID is required" });
+    const error = new Error("Board ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   // Query params to optionally include nested data
@@ -191,13 +199,15 @@ exports.getBoardById = async (req, res) => {
     });
 
     if (!board) {
-      return res.status(404).json({ message: "Board not found" });
+      const error = new Error("Board not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     return res.status(200).json(board);
   } catch (error) {
     console.error("Error fetching board:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -209,12 +219,16 @@ exports.getBoardById = async (req, res) => {
 exports.deleteBoard = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const boardId = req.params.id?.trim();
   if (!boardId) {
-    return res.status(400).json({ message: "Board ID is required" });
+    const error = new Error("Board ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   try {
@@ -232,9 +246,9 @@ exports.deleteBoard = async (req, res) => {
     });
 
     if (!board) {
-      return res.status(403).json({
-        message: "Forbidden: Only board owners can delete",
-      });
+      const error = new Error("Forbidden: Only board owners can delete");
+      error.statusCode = 403;
+      throw error;
     }
 
     // Delete board (cascades delete members, columns, cards)
@@ -245,7 +259,7 @@ exports.deleteBoard = async (req, res) => {
     return res.status(204).send();
   } catch (error) {
     console.error("Error deleting board:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -257,12 +271,16 @@ exports.deleteBoard = async (req, res) => {
 exports.updateBoard = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const boardId = req.params.id?.trim();
   if (!boardId) {
-    return res.status(400).json({ message: "Board ID is required" });
+    const error = new Error("Board ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const { name, description, emoji } = req.body;
@@ -290,9 +308,9 @@ exports.updateBoard = async (req, res) => {
     });
 
     if (!boardMember) {
-      return res.status(403).json({
-        message: "Forbidden: Only board owners and admins can update",
-      });
+      const error = new Error("Forbidden: Only board owners and admins can update");
+      error.statusCode = 403;
+      throw error;
     }
 
     // Update board
@@ -309,6 +327,6 @@ exports.updateBoard = async (req, res) => {
     return res.status(200).json(updatedBoard);
   } catch (error) {
     console.error("Error updating board:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };

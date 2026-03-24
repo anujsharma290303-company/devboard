@@ -9,11 +9,13 @@ const {
 	updateColumnSchema,
 	reorderColumnsSchema,
 } = require("../validators/columnValidator.js");
+const requireRole = require("../middleware/requireRole.js");
 
 // Create a column for a board
 router.post(
 	"/boards/:boardId/columns",
 	authenticate,
+	requireRole("editor", "admin", "owner"),
 	validate(createColumnSchema),
 	columnController.createColumn,
 );
@@ -22,14 +24,15 @@ router.post(
 router.patch(
 	"/columns/reorder",
 	authenticate,
+	requireRole("editor", "admin", "owner"),
 	validate(reorderColumnsSchema),
 	columnController.reorderColumns,
 );
 
 // Update a single column title
-router.patch("/columns/:id", authenticate, validate(updateColumnSchema), columnController.updateColumn);
+router.patch("/columns/:id", authenticate, requireRole("editor", "admin", "owner"), validate(updateColumnSchema), columnController.updateColumn);
 
 // Delete a single column
-router.delete("/columns/:id", authenticate, columnController.deleteColumn);
+router.delete("/columns/:id", authenticate, requireRole("editor", "admin", "owner"), columnController.deleteColumn);
 
 module.exports = router;

@@ -6,14 +6,16 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController.js");
 const authenticate = require("../middleware/auth.js");
+const avatarUpload = require("../middleware/avatarUpload.js");
 const { validate } = require("../middleware/validate.js");
+const { loginLimiter, forgotPasswordLimiter } = require("../middleware/rateLimiter.js");
 const { registerSchema, loginSchema, refreshTokenSchema, logoutSchema, forgotPasswordSchema, resetPasswordSchema } = require("../validators/authValidator.js");
 /**
  * POST /api/auth/forgot-password
  * Public endpoint to request a password reset link
  * Body: { email }
  */
-router.post("/forgot-password", validate(forgotPasswordSchema), authController.forgotPassword);
+router.post("/forgot-password", forgotPasswordLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
 
 /**
  * POST /api/auth/reset-password
@@ -38,7 +40,7 @@ router.post("/register", validate(registerSchema), authController.register);
  * Public endpoint to authenticate user and receive tokens
  * Body: { email, password }
  */
-router.post("/login", validate(loginSchema), authController.login);
+router.post("/login", loginLimiter, validate(loginSchema), authController.login);
 
 /**
  * POST /api/auth/refresh-token
@@ -54,5 +56,8 @@ router.post("/refresh-token", validate(refreshTokenSchema), authController.refre
  * Body: { refreshToken }
  */
 router.post("/logout", authenticate, validate(logoutSchema), authController.logout);
+
+// PUT /auth/avatar - upload or replace user avatar
+router.put("/avatar", authenticate, avatarUpload, authController.uploadAvatar);
 
 module.exports = router;

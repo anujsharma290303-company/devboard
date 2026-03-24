@@ -16,16 +16,22 @@ exports.createCard = async (req, res) => {
 
   // Validation
   if (!columnId) {
-    return res.status(400).json({ message: "Column ID is required" });
+    const error = new Error("Column ID is required");
+    error.statusCode = 400;
+    throw error;
   }
   if (!title || typeof title !== "string" || !title.trim()) {
-    return res.status(400).json({ message: "Card title is required" });
+    const error = new Error("Card title is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   // Get user ID from authenticated request
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   try {
@@ -36,25 +42,12 @@ exports.createCard = async (req, res) => {
     });
 
     if (!column) {
-      return res.status(404).json({ message: "Column not found" });
+      const error = new Error("Column not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardId = column.boardId;
-
-    // Verify user is a board member
-    const boardMember = await prismaClient.boardMember.findFirst({
-      where: {
-        boardId,
-        userId,
-      },
-      select: { id: true },
-    });
-
-    if (!boardMember) {
-      return res.status(403).json({
-        message: "Forbidden: Only board members can create cards",
-      });
-    }
 
     // Validate assignee when provided to avoid foreign key errors
     if (assigneeId) {
@@ -64,9 +57,9 @@ exports.createCard = async (req, res) => {
       });
 
       if (!assignee) {
-        return res.status(400).json({
-          message: "Invalid assigneeId: user does not exist",
-        });
+        const error = new Error("Invalid assigneeId: user does not exist");
+        error.statusCode = 400;
+        throw error;
       }
 
       const assigneeMembership = await prismaClient.boardMember.findFirst({
@@ -78,9 +71,9 @@ exports.createCard = async (req, res) => {
       });
 
       if (!assigneeMembership) {
-        return res.status(400).json({
-          message: "Invalid assigneeId: user is not a member of this board",
-        });
+        const error = new Error("Invalid assigneeId: user is not a member of this board");
+        error.statusCode = 400;
+        throw error;
       }
     }
 
@@ -92,9 +85,9 @@ exports.createCard = async (req, res) => {
     const normalizedPriority = priority ? priority.toLowerCase() : "medium";
 
     if (!validPriorities.includes(normalizedPriority)) {
-      return res.status(400).json({
-        message: `Invalid priority. Must be one of: ${validPriorities.join(", ")}`,
-      });
+      const error = new Error(`Invalid priority. Must be one of: ${validPriorities.join(", ")}`);
+      error.statusCode = 400;
+      throw error;
     }
 
     // Create the card with all required fields
@@ -131,7 +124,7 @@ exports.createCard = async (req, res) => {
     return res.status(201).json(newCard);
   } catch (error) {
     console.error("Error creating card:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -280,20 +273,6 @@ exports.updateCard = async (req, res) => {
 
     if (!cardBasic) {
       return res.status(404).json({ message: "Card not found" });
-    }
-
-    const boardMember = await prismaClient.boardMember.findFirst({
-      where: {
-        boardId: cardBasic.column.boardId,
-        userId,
-      },
-      select: { id: true },
-    });
-
-    if (!boardMember) {
-      return res.status(403).json({
-        message: "Forbidden: Only board members can update cards",
-      });
     }
 
     // Build update data object with only provided fields

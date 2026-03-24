@@ -91,7 +91,9 @@ exports.register = async (req, res) => {
       where: { email },
     });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
+      const error = new Error("Email already in use");
+      error.statusCode = 400;
+      throw error;
     }
 
     // Hash password and create user
@@ -113,7 +115,7 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -128,13 +130,17 @@ exports.login = async (req, res) => {
     // Find user by email
     const user = await prismaClient.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      throw error;
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      throw error;
     }
 
     // Issue tokens
@@ -150,7 +156,7 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -169,7 +175,7 @@ exports.logout = async (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Logout error:", error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -187,12 +193,16 @@ exports.refreshToken = async (req, res) => {
     });
 
     if (!storedToken) {
-      return res.status(401).json({ message: "Invalid refresh token" });
+      const error = new Error("Invalid refresh token");
+      error.statusCode = 401;
+      throw error;
     }
 
     // Check if token is revoked or expired
     if (storedToken.revoked || storedToken.expiresAt < new Date()) {
-      return res.status(401).json({ message: "Refresh token expired" });
+      const error = new Error("Refresh token expired");
+      error.statusCode = 401;
+      throw error;
     }
 
     const userId = storedToken.userId;
@@ -210,7 +220,7 @@ exports.refreshToken = async (req, res) => {
     });
   } catch (error) {
     console.error("Refresh token error:", error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 exports.forgotPassword = async (req, res) => {
@@ -249,7 +259,7 @@ exports.forgotPassword = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 exports.resetPassword = async (req, res) => {
@@ -264,9 +274,9 @@ exports.resetPassword = async (req, res) => {
     });
 
     if (!record || record.expiresAt < new Date()) {
-      return res.status(400).json({
-        message: "Invalid or expired token",
-      });
+      const error = new Error("Invalid or expired token");
+      error.statusCode = 400;
+      throw error;
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -292,6 +302,37 @@ exports.resetPassword = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    next(error);
+  }
+};
+
+/**
+ * Upload user avatar, update avatarPath in DB, return updated user
+ * PUT /api/auth/avatar
+ */
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.user && req.user.id;
+    if (!userId) {
+      const error = new Error("Unauthorized");
+      error.statusCode = 401;
+      throw error;
+    }
+    if (!req.file) {
+      const error = new Error("No file uploaded");
+      error.statusCode = 400;
+      throw error;
+    }
+    // Update user avatarPath in DB
+    const updatedUser = await prismaClient.user.update({
+      where: { id: userId },
+      data: { avatarPath: req.file.path },
+    });
+    res.status(200).json({
+      user: updatedUser,
+      avatarUrl: `/api/uploads/avatars/${userId}/avatar.jpg`,
+    });
+  } catch (err) {
+    next(err);
   }
 };

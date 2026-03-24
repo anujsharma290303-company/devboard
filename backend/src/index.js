@@ -1,7 +1,8 @@
-
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { generalLimiter } = require('./middleware/rateLimiter.js');
+const errorHandler = require('./middleware/errorHandler.js');
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,12 @@ app.use((req, res, next) => {
   console.log(`[${timestamp}] ${req.method} ${req.path}`);
   next();
 });
+
+// Serve uploaded files statically
+app.use("/api/uploads", express.static("uploads"));
+
+// Apply general rate limiter globally
+app.use(generalLimiter);
 
 // ============================================================================
 // Routes
@@ -60,6 +67,10 @@ app.use('/api', commentRoute);
 const memberRoute = require('./routes/memberRoute.js');
 app.use('/api', memberRoute);
 
+// Label Routes
+const labelRoute = require('./routes/labelRoute.js');
+app.use('/api', labelRoute);
+
 // ============================================================================
 // Error Handling
 // ============================================================================
@@ -69,22 +80,8 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Endpoint not found' });
 });
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err.message, err.stack);
-  
-  // Handle JSON parse errors
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    return res.status(400).json({ message: 'Invalid JSON payload' });
-  }
-
-  // Default error response
-  res.status(err.status || 500).json({
-    message: process.env.NODE_ENV === 'production'
-      ? 'Internal server error'
-      : err.message,
-  });
-});
+// Centralized error handler (must be last)
+app.use(errorHandler);
 
 // ============================================================================
 // Server Startup

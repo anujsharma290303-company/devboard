@@ -11,15 +11,21 @@ exports.addComment = async (req, res) => {
   const { content, parentId } = req.body;
 
   if (!cardId) {
-    return res.status(400).json({ message: "Card ID is required" });
+    const error = new Error("Card ID is required");
+    error.statusCode = 400;
+    throw error;
   }
   if (!content || typeof content !== "string" || !content.trim()) {
-    return res.status(400).json({ message: "Comment content is required" });
+    const error = new Error("Comment content is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   try {
@@ -37,7 +43,9 @@ exports.addComment = async (req, res) => {
     });
 
     if (!card) {
-      return res.status(404).json({ message: "Card not found" });
+      const error = new Error("Card not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const boardId = card.column.boardId;
@@ -52,9 +60,9 @@ exports.addComment = async (req, res) => {
     });
 
     if (!boardMember) {
-      return res.status(403).json({
-        message: "Forbidden: Only board members can add comments",
-      });
+      const error = new Error("Forbidden: Only board members can add comments");
+      error.statusCode = 403;
+      throw error;
     }
 
     // If parentId provided, verify it exists and belongs to the same card
@@ -65,13 +73,15 @@ exports.addComment = async (req, res) => {
       });
 
       if (!parentComment) {
-        return res.status(404).json({ message: "Parent comment not found" });
+        const error = new Error("Parent comment not found");
+        error.statusCode = 404;
+        throw error;
       }
 
       if (parentComment.cardId !== cardId) {
-        return res.status(400).json({
-          message: "Parent comment must belong to the same card",
-        });
+        const error = new Error("Parent comment must belong to the same card");
+        error.statusCode = 400;
+        throw error;
       }
     }
 
@@ -98,7 +108,7 @@ exports.addComment = async (req, res) => {
     return res.status(201).json(newComment);
   } catch (error) {
     console.error("Error adding comment:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 

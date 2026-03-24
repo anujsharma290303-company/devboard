@@ -13,33 +13,26 @@ const getNextColumnPosition = async (boardId) => {
 exports.createColumn = async (req, res) => {
   const boardId = req.params.boardId?.trim();
   if (!boardId) {
-    return res.status(400).json({ message: "Board ID is required" });
+    const error = new Error("Board ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const { title } = req.body;
   if (!title || typeof title !== "string" || !title.trim()) {
-    return res.status(400).json({ message: "Column title is required" });
+    const error = new Error("Column title is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   try {
-    // Only board members can create columns.
-    const boardMember = await prismaClient.boardMember.findFirst({
-      where: {
-        boardId,
-        userId,
-      },
-      select: { id: true },
-    });
-
-    if (!boardMember) {
-      return res.status(403).json({ message: "Forbidden: Only board members can create columns" });
-    }
-
     const nextPosition = await getNextColumnPosition(boardId);
 
     const newColumn = await prismaClient.column.create({
@@ -53,7 +46,7 @@ exports.createColumn = async (req, res) => {
     return res.status(201).json(newColumn);
   } catch (error) {
     console.error("Error creating column:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -61,17 +54,23 @@ exports.createColumn = async (req, res) => {
 exports.updateColumn = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const columnId = req.params.id?.trim();
   if (!columnId) {
-    return res.status(400).json({ message: "Column ID is required" });
+    const error = new Error("Column ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   const { title } = req.body;
   if (typeof title !== "string" || !title.trim()) {
-    return res.status(400).json({ message: "Column title is required" });
+    const error = new Error("Column title is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   try {
@@ -81,20 +80,9 @@ exports.updateColumn = async (req, res) => {
     });
 
     if (!column) {
-      return res.status(404).json({ message: "Column not found" });
-    }
-
-    // Verify user is a member of the board that owns this column.
-    const boardMember = await prismaClient.boardMember.findFirst({
-      where: {
-        boardId: column.boardId,
-        userId,
-      },
-      select: { id: true },
-    });
-
-    if (!boardMember) {
-      return res.status(403).json({ message: "Forbidden: Only board members can update columns" });
+      const error = new Error("Column not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const updatedColumn = await prismaClient.column.update({
@@ -107,7 +95,7 @@ exports.updateColumn = async (req, res) => {
     return res.status(200).json(updatedColumn);
   } catch (error) {
     console.error("Error updating column:", error);
-    return res.status(500).json({ message: "Server error" });
+    next(error);
   }
 };
 
@@ -115,12 +103,16 @@ exports.updateColumn = async (req, res) => {
 exports.deleteColumn = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
   }
 
   const columnId = req.params.id?.trim();
   if (!columnId) {
-    return res.status(400).json({ message: "Column ID is required" });
+    const error = new Error("Column ID is required");
+    error.statusCode = 400;
+    throw error;
   }
 
   try {
