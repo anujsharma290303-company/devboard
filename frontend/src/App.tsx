@@ -1,13 +1,44 @@
-import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { GuestRoute } from "./components/auth/GuestRoute";
 
-function App() {
-	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-600">
-			<h1 className="text-4xl font-bold text-white mb-4">Tailwind CSS Test</h1>
-			<p className="text-lg text-white mb-8">If you see this styled page, Tailwind CSS is working!</p>
-			<button className="px-6 py-2 rounded bg-white text-blue-600 font-semibold shadow hover:bg-blue-100 transition">Test Button</button>
-		</div>
-	);
+function BoardsPlaceholder() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="rounded-xl bg-white p-8 shadow-md">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Boards</h1>
+        <p className="text-slate-600">This is a placeholder for the boards dashboard.</p>
+      </div>
+    </div>
+  );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      {/* Root path redirect */}
+      <Route path="/" element={<AuthRedirect />} />
+      <Route element={<GuestRoute />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="/boards" element={<BoardsPlaceholder />} />
+      </Route>
+      {/* Wildcard route: redirect based on auth */}
+      <Route path="*" element={<AuthRedirect />} />
+    </Routes>
+  );
+}
+
+import { useAuth } from "./context/useAuth";
+
+function AuthRedirect() {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
+    return <Navigate to="/boards" replace />;
+  }
+  return <Navigate to="/login" replace />;
+}
