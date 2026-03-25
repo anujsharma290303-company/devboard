@@ -16,7 +16,25 @@ const PORT = process.env.PORT || 5000;
 // ============================================================================
 
 // CORS middleware - allow cross-origin requests
-app.use(cors({ origin: process.env.CLIENT_URL }))
+const allowedOrigins = [
+  "http://localhost:5173", // local frontend
+  process.env.CLIENT_URL,  // future deployed frontend
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Postman / server-to-server
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 // JSON parser with error handling
 app.use(express.json());
