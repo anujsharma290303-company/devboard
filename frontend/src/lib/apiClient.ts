@@ -1,3 +1,5 @@
+import { getStoredSession } from "../context/authSession";
+
 export const API_BASE_URL =
 	import.meta.env.VITE_API_BASE_URL || "https://devboard-4dco.onrender.com/api";
 
@@ -62,4 +64,18 @@ export async function apiClient<T>(
 	}
 
 	return data as T;
+}
+
+
+
+export async function authApiClient<T>(
+	endpoint: string,
+	options: Omit<ApiClientOptions, "token"> = {}
+): Promise<T> {
+	const session = getStoredSession()
+const token = session?.accessToken
+	if (!token) {
+		throw new ApiError("No authentication token found", 401);
+	}	
+	return apiClient<T>(endpoint, { ...options, token });
 }
