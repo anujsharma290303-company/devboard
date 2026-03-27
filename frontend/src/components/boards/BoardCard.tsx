@@ -1,6 +1,6 @@
 import React from "react";
 import type { Board } from "../../types/board";
-import { Badge } from "../ui/Badge";
+
 
 type BoardCardProps = {
   board: Board;
@@ -29,10 +29,10 @@ export const BoardCard: React.FC<BoardCardProps> = ({ board, onClick }) => {
       </div>
           {/* Example Badge usage for future role/priority/status */}
           {/* <Badge variant="blue">Owner</Badge> */}
-      <div className="text-slate-500 text-[15px] truncate mb-2 min-h-[1.25rem]">
+      <div className="text-slate-700 dark:text-slate-200 text-[15px] truncate mb-2 min-h-[1.25rem]">
         {board.description?.trim()
           ? board.description
-          : <span className="italic text-slate-300">No description</span>
+          : <span className="italic text-slate-400 dark:text-slate-500">No description</span>
         }
       </div>
       <div className="flex items-center gap-6 mt-auto text-xs text-slate-400 pt-2 border-t border-slate-100">

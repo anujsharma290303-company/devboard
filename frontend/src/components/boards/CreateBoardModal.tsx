@@ -18,7 +18,8 @@ type CreateBoardModalProps = {
     description: string;
   };
   handleChange: React.ChangeEventHandler<HTMLInputElement>;
-  handleBlur: React.FocusEventHandler<HTMLInputElement>;
+  handleTextareaChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  handleBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   touched: Record<string, boolean>;
   errors: Record<string, string>;
 };
@@ -27,7 +28,7 @@ type CreateBoardModalProps = {
 // ...component logic (props, state, handlers)
 
 export function CreateBoardModal(props: CreateBoardModalProps) {
-  const { open, onClose, isPending, handleSubmit, formError, error, fields, handleChange, handleBlur, touched, errors } = props;
+  const { open, onClose, isPending, handleSubmit, formError, error, fields, handleChange, handleTextareaChange, handleBlur, touched, errors } = props;
   if (!open) return null;
 
   return (
@@ -66,8 +67,8 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
           label="Description"
           placeholder="Short description"
           value={fields.description}
-          onChange={handleChange as any}
-          onBlur={handleBlur as any}
+          onChange={handleTextareaChange}
+          onBlur={handleBlur}
           disabled={isPending}
           error={touched.description && errors.description ? errors.description : undefined}
           rows={3}

@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useCreateBoard } from "../hooks/useCreateBoard";
 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCreateBoard } from "../hooks/useCreateBoard";
 import { useBoards } from "../hooks/useBoards";
 import { BoardGrid } from "../components/boards/BoardGrid";
 import { BoardsEmptyState } from "../components/boards/BoardsEmptyState";
@@ -8,9 +9,12 @@ import { CreateBoardModal } from "../components/boards/CreateBoardModal";
 import { Button } from "../components/ui/Button";
 import { Skeleton } from "../components/ui/Skeleton";
 
+
+
 export function BoardsPage() {
   const { data: boards, isLoading, isError, error } = useBoards();
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Create Board Modal form state
   const [fields, setFields] = useState({ emoji: "📋", name: "", description: "" });
@@ -24,9 +28,14 @@ export function BoardsPage() {
     setFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({ ...prev, [name]: value }));
   };
 
   const validate = () => {
@@ -55,7 +64,12 @@ export function BoardsPage() {
           setErrors({});
         },
         onError: (err: unknown) => {
-          if (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string') {
+          if (
+            err &&
+            typeof err === 'object' &&
+            'message' in err &&
+            typeof (err as { message?: unknown }).message === 'string'
+          ) {
             setFormError((err as { message: string }).message);
           } else {
             setFormError("Failed to create board.");
@@ -94,7 +108,7 @@ export function BoardsPage() {
       ) : isError ? (
         <div className="text-red-500 font-semibold py-10">{error instanceof Error ? error.message : "Failed to load boards."}</div>
       ) : boards && boards.length > 0 ? (
-        <BoardGrid boards={boards} />
+        <BoardGrid boards={boards} onBoardClick={(board) => navigate(`/boards/${board.id}`)} />
       ) : (
         <BoardsEmptyState onCreateBoard={() => setCreateModalOpen(true)} />
       )}
@@ -108,6 +122,7 @@ export function BoardsPage() {
         error={createBoardMutation.error}
         fields={fields}
         handleChange={handleChange}
+        handleTextareaChange={handleTextareaChange}
         handleBlur={handleBlur}
         touched={touched}
         errors={errors}
