@@ -1,6 +1,4 @@
-const attachmentRoute = require('./routes/attachmentRoute.js');
-// Attachment Routes
-app.use('/api', attachmentRoute);
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -13,6 +11,10 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Register attachment routes after app and middleware are set up
+const attachmentRoute = require('./routes/attachmentRoute.js');
+app.use('/api', attachmentRoute);
 
 // ============================================================================
 // Middleware
