@@ -22,17 +22,49 @@ export type BoardCount = {
   members: number
 }
 
+
+export type Label = {
+  id: number | string;
+  boardId: string;
+  name: string;
+  color: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type Card = {
+  id: string;
+  columnId: string;
+  title: string;
+  description: string | null;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
+  labels?: Label[];
+};
+
+export type Column = {
+  id: string;
+  boardId: string;
+  title: string;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
+  cards: Card[];
+};
+
 export type Board = {
-  id: string
-  name: string
-  description: string | null
-  emoji: string
-  ownerId: string
-  createdAt: string
-  updatedAt: string
-  _count: BoardCount
-  members?: BoardMember[]
-}
+  id: string;
+  name: string;
+  description: string | null;
+  emoji: string;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  _count: BoardCount;
+  members?: BoardMember[];
+  columns?: Column[];
+};
 
 export type CreateBoardPayload = {
   name: string

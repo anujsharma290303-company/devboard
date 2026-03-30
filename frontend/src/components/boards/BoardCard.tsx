@@ -1,6 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import type { Board } from "../../types/board";
-
 
 type BoardCardProps = {
   board: Board;
@@ -8,16 +8,13 @@ type BoardCardProps = {
 };
 
 export const BoardCard: React.FC<BoardCardProps> = ({ board, onClick }) => {
-  const handleClick = () => {
-    if (onClick) onClick(board);
-  };
-
+  // onClick is preserved for compatibility, but navigation is handled by Link
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="group w-full text-left bg-white rounded-2xl shadow border border-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-in-out p-6 flex flex-col gap-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <Link
+      to={`/boards/${board.id}`}
+      className="group w-full text-left bg-white rounded-2xl shadow border border-slate-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ease-in-out p-6 flex flex-col gap-3 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 no-underline"
       aria-label={`Open board ${board.name}`}
+      onClick={onClick ? (e) => { e.stopPropagation(); onClick(board); } : undefined}
     >
       <div className="flex items-center gap-3 mb-2">
         <span className="text-4xl select-none drop-shadow-sm">
@@ -27,8 +24,8 @@ export const BoardCard: React.FC<BoardCardProps> = ({ board, onClick }) => {
           {board.name}
         </span>
       </div>
-          {/* Example Badge usage for future role/priority/status */}
-          {/* <Badge variant="blue">Owner</Badge> */}
+      {/* Example Badge usage for future role/priority/status */}
+      {/* <Badge variant="blue">Owner</Badge> */}
       <div className="text-slate-700 dark:text-slate-200 text-[15px] truncate mb-2 min-h-[1.25rem]">
         {board.description?.trim()
           ? board.description
@@ -49,6 +46,6 @@ export const BoardCard: React.FC<BoardCardProps> = ({ board, onClick }) => {
           Members
         </span>
       </div>
-    </button>
+    </Link>
   );
 };

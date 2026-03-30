@@ -1,6 +1,7 @@
 
   import { Routes, Route, Navigate } from "react-router-dom";
   import { BoardsPage } from "./pages/BoardsPage";
+  import BoardDetailsPage from "./pages/BoardDetailsPage";
   import { AppShell } from "./components/layout/AppShell";
   import LoginPage from "./pages/LoginPage";
   import RegisterPage from "./pages/RegisterPage";
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppShell />}>
             <Route path="/boards" element={<BoardsPage />} />
+            <Route path="/boards/:id" element={<BoardDetailsPage />} />
           </Route>
         </Route>
         {/* Wildcard route: redirect based on auth */}

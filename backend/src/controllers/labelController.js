@@ -1,6 +1,6 @@
 const prismaClient = require("../config/prisma");
 
-exports.createLabel = async (req, res) => {
+exports.createLabel = async (req, res,next) => {
   const boardId = req.params.boardId?.trim();
   const userId = req.user?.id;
   const { name, color } = req.body;
@@ -32,7 +32,7 @@ exports.createLabel = async (req, res) => {
   }
 };
 
-exports.getBoardLabels = async (req, res) => {
+exports.getBoardLabels = async (req, res,next) => {
   const boardId = req.params.boardId?.trim();
   const userId = req.user?.id;
 
@@ -59,7 +59,7 @@ exports.getBoardLabels = async (req, res) => {
   }
 };
 
-exports.addLabelToCard = async (req, res) => {
+exports.addLabelToCard = async (req, res,next) => {
   const cardId = req.params.cardId?.trim();
   const userId = req.user?.id;
   const { labelId } = req.body;
@@ -106,7 +106,7 @@ exports.addLabelToCard = async (req, res) => {
   }
 };
 
-exports.removeLabelFromCard = async (req, res) => {
+exports.removeLabelFromCard = async (req, res,next) => {
   const cardId = req.params.cardId?.trim();
   const labelId = req.params.labelId?.trim();
   const userId = req.user?.id;
