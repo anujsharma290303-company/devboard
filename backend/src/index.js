@@ -1,3 +1,6 @@
+const attachmentRoute = require('./routes/attachmentRoute.js');
+// Attachment Routes
+app.use('/api', attachmentRoute);
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
