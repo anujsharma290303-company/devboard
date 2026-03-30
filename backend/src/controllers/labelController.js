@@ -8,17 +8,17 @@ exports.createLabel = async (req, res,next) => {
   if (!userId) {
     const error = new Error("Unauthorized");
     error.statusCode = 401;
-    throw error;
+    return next(error);
   }
   if (!boardId) {
     const error = new Error("Board ID is required");
     error.statusCode = 400;
-    throw error;
+    return next(error);
   }
   if (!name || !color) {
     const error = new Error("Name and color are required");
     error.statusCode = 400;
-    throw error;
+    return next(error);
   }
 
   try {
@@ -39,12 +39,12 @@ exports.getBoardLabels = async (req, res,next) => {
   if (!userId) {
     const error = new Error("Unauthorized");
     error.statusCode = 401;
-    throw error;
+    return next(error);
   }
   if (!boardId) {
     const error = new Error("Board ID is required");
     error.statusCode = 400;
-    throw error;
+    return next(error);
   }
 
   try {
@@ -59,7 +59,7 @@ exports.getBoardLabels = async (req, res,next) => {
   }
 };
 
-exports.addLabelToCard = async (req, res,next) => {
+exports.addLabelToCard = async (req, res, next) => {
   const cardId = req.params.cardId?.trim();
   const userId = req.user?.id;
   const { labelId } = req.body;
@@ -67,19 +67,82 @@ exports.addLabelToCard = async (req, res,next) => {
   if (!userId) {
     const error = new Error("Unauthorized");
     error.statusCode = 401;
-    throw error;
+    return next(error);
+  }
+
+  if (!cardId || !labelId) {
+    const error = new Error("Card ID and label ID are required");
+    error.statusCode = 400;
+    return next(error);
+  }
+
+  try {
+    // Get card's board through its column
+    const card = await prismaClient.card.findUnique({
+      where: { id: cardId },
+      select: {
+        column: {
+          select: {
+            boardId: true,
+          },
+        },
+      },
+    });
+
+    const label = await prismaClient.label.findUnique({
+      where: { id: labelId },
+      select: { boardId: true },
+    });
+
+    if (!card || !label) {
+      const error = new Error("Card or label not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if (card.column.boardId !== label.boardId) {
+      const error = new Error("Label and card must belong to the same board");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const cardLabel = await prismaClient.cardLabel.create({
+      data: { cardId, labelId },
+    });
+
+    return res.status(201).json(cardLabel);
+  } catch (error) {
+    console.error("Error adding label to card:", error);
+    return next(error);
+  }
+};
+
+exports.removeLabelFromCard = async (req, res, next) => {
+  const cardId = req.params.cardId?.trim();
+  const labelId = req.params.labelId?.trim();
+  const userId = req.user?.id;
+
+  if (!userId) {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    return next(error);
   }
   if (!cardId || !labelId) {
     const error = new Error("Card ID and label ID are required");
     error.statusCode = 400;
-    throw error;
+    return next(error);
   }
 
   try {
-    // Get card and label
     const card = await prismaClient.card.findUnique({
       where: { id: cardId },
-      select: { boardId: true },
+      select: {
+        column: {
+          select: {
+            boardId: true,
+          },
+        },
+      },
     });
     const label = await prismaClient.label.findUnique({
       where: { id: labelId },
@@ -88,58 +151,19 @@ exports.addLabelToCard = async (req, res,next) => {
     if (!card || !label) {
       const error = new Error("Card or label not found");
       error.statusCode = 404;
-      throw error;
+      return next(error);
     }
-    if (card.boardId !== label.boardId) {
+    if (card.column.boardId !== label.boardId) {
       const error = new Error("Label and card must belong to the same board");
       error.statusCode = 400;
-      throw error;
+      return next(error);
     }
-    // Attach label to card
-    const cardLabel = await prismaClient.cardLabel.create({
-      data: { cardId, labelId },
-    });
-    return res.status(201).json(cardLabel);
-  } catch (error) {
-    console.error("Error adding label to card:", error);
-    next(error);
-  }
-};
-
-exports.removeLabelFromCard = async (req, res,next) => {
-  const cardId = req.params.cardId?.trim();
-  const labelId = req.params.labelId?.trim();
-  const userId = req.user?.id;
-
-  if (!userId) {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
-    throw error;
-  }
-  if (!cardId || !labelId) {
-    const error = new Error("Card ID and label ID are required");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  try {
-    // Verify user is a board member
-    const card = await prismaClient.card.findUnique({
-      where: { id: cardId },
-      select: { boardId: true },
-    });
-    if (!card) {
-      const error = new Error("Card not found");
-      error.statusCode = 404;
-      throw error;
-    }
-    // Remove label from card
     await prismaClient.cardLabel.deleteMany({
       where: { cardId, labelId },
     });
     return res.status(204).send();
   } catch (error) {
     console.error("Error removing label from card:", error);
-    next(error);
+    return next(error);
   }
 };
