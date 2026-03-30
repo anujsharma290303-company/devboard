@@ -1,12 +1,14 @@
 export interface Comment {
   id: string;
   cardId: string;
-  author: {
+  user: {
     id: string;
-    name: string;
-    avatarUrl?: string;
+    displayName: string;
+    email: string;
+    avatarPath?: string | null;
   };
-  text: string;
+  content: string;
+  parentId?: string | null;
   createdAt: string;
-  canDelete?: boolean;
+  updatedAt?: string;
 }

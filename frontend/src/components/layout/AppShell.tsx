@@ -1,11 +1,19 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useMatch } from "react-router-dom";
 import { Navbar } from "./Navbar";
 
 export function AppShell() {
+  const isBoardDetail = useMatch("/boards/:id");
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main
+        className={
+          isBoardDetail
+            ? "w-full px-4 py-6 sm:px-6"
+            : "mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+        }
+      >
         <Outlet />
       </main>
     </div>

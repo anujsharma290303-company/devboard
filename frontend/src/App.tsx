@@ -1,4 +1,5 @@
 
+
   import { Routes, Route, Navigate } from "react-router-dom";
   import { BoardsPage } from "./pages/BoardsPage";
   import BoardDetailsPage from "./pages/BoardDetailsPage";
@@ -10,6 +11,7 @@
   import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx";
   import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
   import { useAuth } from "./context/useAuth";
+  import ProfilePage from "./pages/ProfilePage";
 
 
 export default function App() {
@@ -27,6 +29,7 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route path="/boards" element={<BoardsPage />} />
             <Route path="/boards/:id" element={<BoardDetailsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
         {/* Wildcard route: redirect based on auth */}

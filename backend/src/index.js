@@ -12,15 +12,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Register attachment routes after app and middleware are set up
-const attachmentRoute = require('./routes/attachmentRoute.js');
-app.use('/api', attachmentRoute);
 
-// ============================================================================
-// Middleware
-// ============================================================================
-
-// CORS middleware - allow cross-origin requests
+// CORS middleware - allow cross-origin requests (must be before any routes)
 const allowedOrigins = [
   "http://localhost:5173", // local frontend
   process.env.CLIENT_URL,  // future deployed frontend
@@ -40,6 +33,15 @@ app.use(
     credentials: true,
   })
 );
+
+// Register attachment routes after CORS and middleware are set up
+const attachmentRoute = require('./routes/attachmentRoute.js');
+app.use('/api', attachmentRoute);
+
+// ============================================================================
+// Middleware
+// ============================================================================
+
 
 // JSON parser with error handling
 app.use(express.json());

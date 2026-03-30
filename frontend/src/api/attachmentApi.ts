@@ -1,13 +1,14 @@
-import { apiClient, API_BASE_URL } from "../lib/apiClient";
+import { authApiClient, API_BASE_URL } from "../lib/apiClient";
+import { getStoredSession } from "../context/authSession";
 import type { Attachment } from "../types/attachment";
 
-// GET /cards/:id/attachments
-export async function getCardAttachments(cardId: string, token: string): Promise<Attachment[]> {
-  return apiClient<Attachment[]>(`/cards/${cardId}/attachments`, { token });
+export async function getCardAttachments(cardId: string): Promise<Attachment[]> {
+  return authApiClient<Attachment[]>(`/cards/${cardId}/attachments`);
 }
 
-// POST /cards/:id/attachments (multipart/form-data)
-export async function uploadAttachment(cardId: string, file: File, token: string): Promise<Attachment> {
+export async function uploadAttachment(cardId: string, file: File): Promise<Attachment> {
+  const session = getStoredSession();
+  const token = session?.accessToken;
   const formData = new FormData();
   formData.append("file", file);
 
@@ -25,10 +26,8 @@ export async function uploadAttachment(cardId: string, file: File, token: string
   return response.json();
 }
 
-// DELETE /attachments/:id
-export async function deleteAttachment(attachmentId: string, token: string): Promise<void> {
-  await apiClient<void>(`/attachments/${attachmentId}`, {
+export async function deleteAttachment(attachmentId: string): Promise<void> {
+  await authApiClient<void>(`/attachments/${attachmentId}`, {
     method: "DELETE",
-    token,
   });
 }

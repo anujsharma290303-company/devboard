@@ -1,17 +1,19 @@
-import { apiClient } from "../lib/apiClient";
+import { authApiClient } from "../lib/apiClient";
 import type { Comment } from "../types/comment";
 
-// Accept token as parameter for all requests
-export async function fetchComments(cardId: string, token: string): Promise<Comment[]> {
-  return apiClient<Comment[]>(`/cards/${cardId}/comments`, {
-    token,
+export async function fetchComments(cardId: string): Promise<Comment[]> {
+  return authApiClient<Comment[]>(`/cards/${cardId}/comments`);
+}
+
+export async function createComment(cardId: string, content: string): Promise<Comment> {
+  return authApiClient<Comment>(`/cards/${cardId}/comments`, {
+    method: "POST",
+    body: { content },
   });
 }
 
-export async function createComment(cardId: string, content: string, token: string): Promise<Comment> {
-  return apiClient<Comment>(`/cards/${cardId}/comments`, {
-    method: "POST",
-    body: { content },
-    token,
+export async function deleteComment(commentId: string): Promise<void> {
+  await authApiClient<void>(`/comments/${commentId}`, {
+    method: "DELETE",
   });
 }

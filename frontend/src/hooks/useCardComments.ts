@@ -7,7 +7,7 @@ export function useCardComments(cardId: string) {
   const { accessToken } = useAuth();
   return useQuery<Comment[]>({
     queryKey: ["comments", cardId],
-    queryFn: () => fetchComments(cardId, accessToken || ""),
+    queryFn: () => fetchComments(cardId),
     enabled: !!cardId && !!accessToken,
   });
 }

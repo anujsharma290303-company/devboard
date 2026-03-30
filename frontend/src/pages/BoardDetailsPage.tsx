@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useBoard } from "../hooks/useBoard";
 import { BoardDetailsSkeleton } from "../components/boards/BoardDetailsSkeleton";
 import { BoardHeader } from "../components/boards/BoardHeader";
@@ -8,12 +8,10 @@ import { CreateColumnModal } from "../components/columns/CreateColumnModal";
 import { DragDropContext } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { useMoveCard } from "../hooks/useMoveCard";
-import type { Column } from "../types/board";
 
 export default function BoardDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [isColumnModalOpen, setColumnModalOpen] = useState(false);
-  const [hasLocalState, setHasLocalState] = useState(false);
 
   const {
     data: board,
@@ -24,14 +22,24 @@ export default function BoardDetailsPage() {
 
   const moveCardMutation = useMoveCard(id ?? "");
 
-  const initialColumns = useMemo<Column[]>(() => {
-    if (!board?.columns) return [];
-    return JSON.parse(JSON.stringify(board.columns));
-  }, [board && board.columns]);
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination, draggableId } = result;
 
-  const [localColumns, setLocalColumns] = useState<Column[]>([]);
+    if (!destination) return;
 
-  const columnsToRender = hasLocalState ? localColumns : initialColumns;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    moveCardMutation.mutate({
+      cardId: draggableId,
+      columnId: destination.droppableId,
+      position: destination.index,
+    });
+  };
 
   if (!id) {
     return (
@@ -59,59 +67,6 @@ export default function BoardDetailsPage() {
     );
   }
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination, draggableId } = result;
-
-    if (!destination) return;
-
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
-
-    const workingColumns = JSON.parse(JSON.stringify(columnsToRender)) as Column[];
-
-    const sourceColIdx = workingColumns.findIndex(
-      (col) => col.id === source.droppableId
-    );
-    const destColIdx = workingColumns.findIndex(
-      (col) => col.id === destination.droppableId
-    );
-
-    if (sourceColIdx === -1 || destColIdx === -1) return;
-
-    const sourceCol = { ...workingColumns[sourceColIdx] };
-    const destCol = { ...workingColumns[destColIdx] };
-
-    const sourceCards = [...sourceCol.cards];
-    const destCards =
-      source.droppableId === destination.droppableId
-        ? sourceCards
-        : [...destCol.cards];
-
-    const [movedCard] = sourceCards.splice(source.index, 1);
-    if (!movedCard) return;
-
-    destCards.splice(destination.index, 0, movedCard);
-
-    sourceCol.cards = sourceCards;
-    destCol.cards = destCards;
-
-    workingColumns[sourceColIdx] = sourceCol;
-    workingColumns[destColIdx] = destCol;
-
-    setLocalColumns(workingColumns);
-    setHasLocalState(true);
-
-    moveCardMutation.mutate({
-      cardId: draggableId,
-      columnId: destCol.id,
-      position: destination.index,
-    });
-  };
-
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 px-4 py-6">
       <BoardHeader
@@ -122,7 +77,7 @@ export default function BoardDetailsPage() {
       <div className="overflow-x-auto pb-2">
         <DragDropContext onDragEnd={onDragEnd}>
           <ColumnList
-            columns={columnsToRender}
+            columns={board.columns ?? []}
             onCreateColumn={() => setColumnModalOpen(true)}
             dndEnabled
           />

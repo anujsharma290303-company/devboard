@@ -100,6 +100,17 @@ export const Navbar: React.FC = () => {
                       type="button"
                       onClick={() => {
                         setIsDropdownOpen(false);
+                        navigate("/profile");
+                      }}
+                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50"
+                    >
+                      Profile
+                    </button>
+                    <div className="my-1 border-t border-slate-100" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
                         logout();
                         navigate("/login");
                       }}
