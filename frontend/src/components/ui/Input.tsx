@@ -4,16 +4,21 @@ import clsx from "clsx";
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   error?: string;
+  theme?: "dark" | "light";
 };
 
-export function Input({ label, error, className, id, ...props }: InputProps) {
+export function Input({ label, error, className, id, theme = "dark", ...props }: InputProps) {
   const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
     <div className="w-full">
       <label
         htmlFor={inputId}
-        className="mb-1 block text-[15px] font-bold text-[#00eaff] drop-shadow-[0_0_6px_#00eaff] tracking-wide"
+        className={
+          theme === "light"
+            ? "mb-1 block text-sm font-medium text-slate-700"
+            : "mb-1 block text-[15px] font-bold text-[#00eaff] drop-shadow-[0_0_6px_#00eaff] tracking-wide"
+        }
       >
         {label}
       </label>

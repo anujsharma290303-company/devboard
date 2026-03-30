@@ -38,6 +38,7 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
           {formError || (error instanceof Error ? error.message : undefined)}
         </FormError>
 
+
         <Input
           name="emoji"
           label="Emoji"
@@ -47,6 +48,7 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
           onBlur={handleBlur}
           maxLength={4}
           disabled={isPending}
+          theme="light"
         />
 
         <Input
@@ -59,6 +61,7 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
           error={touched.name && errors.name ? errors.name : undefined}
           disabled={isPending}
           required
+          theme="light"
         />
 
 

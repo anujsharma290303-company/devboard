@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 import { Avatar } from "../ui/Avatar";
+import { useNavigate } from "react-router-dom";
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const avatarButtonRef = useRef<HTMLButtonElement>(null);
@@ -99,6 +101,7 @@ export const Navbar: React.FC = () => {
                       onClick={() => {
                         setIsDropdownOpen(false);
                         logout();
+                        navigate("/login");
                       }}
                       className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-red-600 transition-colors duration-150 hover:bg-red-50 focus:bg-red-100"
                     >

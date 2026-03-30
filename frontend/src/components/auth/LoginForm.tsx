@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { FormError } from "../ui/FormError.tsx";
@@ -87,6 +88,15 @@ export function LoginForm() {
         disabled={isPending}
         required
       />
+
+      <div className="flex justify-end -mt-2">
+        <Link
+          to="/forgot-password"
+          className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 hover:underline"
+        >
+          Forgot password?
+        </Link>
+      </div>
 
       <Button
         type="submit"

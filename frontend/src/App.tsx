@@ -6,6 +6,8 @@
   import RegisterPage from "./pages/RegisterPage";
   import { ProtectedRoute } from "./components/auth/ProtectedRoute";
   import { GuestRoute } from "./components/auth/GuestRoute";
+  import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx";
+  import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
   import { useAuth } from "./context/useAuth";
 
 
@@ -17,6 +19,8 @@ export default function App() {
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<AppShell />}>

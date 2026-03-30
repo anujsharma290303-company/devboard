@@ -9,6 +9,7 @@ export interface AuthState {
   isAuthReady: boolean;
   login: (auth: AuthResponse) => void;
   logout: () => void;
+  refreshSession: () => Promise<string | null>;
 }
 
 export const AuthContext = createContext<AuthState | undefined>(undefined);

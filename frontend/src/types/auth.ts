@@ -1,8 +1,18 @@
-export interface User {
-	id: string;
-	displayName: string;
-	email: string;
+export interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
 }
+
+export interface User {
+  id: string;
+  displayName: string;
+  email: string;
+}
+
+export type ResetPasswordParams = {
+  token: string;
+  newPassword: string;
+};
 
 export interface AuthResponse {
   accessToken: string;
@@ -11,12 +21,12 @@ export interface AuthResponse {
 }
 
 export interface LoginPayload {
-	email: string;
-	password: string;
+  email: string;
+  password: string;
 }
 
 export interface RegisterPayload {
-	displayName: string;
-	email: string;
-	password: string;
+  displayName: string;
+  email: string;
+  password: string;
 }
