@@ -14,9 +14,10 @@ const PORT = process.env.PORT || 5000;
 
 
 // CORS middleware - allow cross-origin requests (must be before any routes)
+
 const allowedOrigins = [
   "http://localhost:5173", // local frontend
-  process.env.CLIENT_URL,  // future deployed frontend
+  // Add deployed frontend URL here when available
 ];
 
 app.use(
