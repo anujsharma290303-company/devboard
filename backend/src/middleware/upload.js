@@ -2,21 +2,26 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Set up multer storage configuration
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    // Accept either :id or :cardId as param for flexibility
     const cardId = req.params.cardId;
-
     if (!cardId) {
       return cb(new Error("Card ID is required in the URL"), null);
     }
-    const dr = path.join("uploads", "cards", cardId || "temp");
-    // Ensure the card-specific directory exists
-    if (!fs.existsSync(dr)) {
-      fs.mkdirSync(dr, { recursive: true });
+    const dir = path.join("uploads", "cards", cardId);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-    cb(null, dr);
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const baseName = path
+      .basename(file.originalname, ext)
+      .replace(/[^a-zA-Z0-9-_]/g, "_");
+    const uniqueName = `${Date.now()}-${baseName}${ext}`;
+    cb(null, uniqueName);
   },
 });
 
@@ -25,7 +30,7 @@ const fileFilter = (req, file, cb) => {
     "image/jpeg",
     "image/png",
     "application/pdf",
-    "text/plain ",
+    "text/plain",
   ];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);

@@ -8,6 +8,10 @@ import { useState } from "react";
 import { useCardComments } from "../../hooks/useCardComments";
 import { CommentList } from "../comments/CommentList";
 import { AddCommentForm } from "../comments/AddCommentForm";
+import { useCardAttachments } from "../../hooks/useCardAttachments";
+import { useDeleteAttachment } from "../../hooks/useDeleteAttachment";
+import { UploadAttachmentForm } from "../attachments/UploadAttachmentForm";
+import { AttachmentList } from "../attachments/AttachmentList";
 
 type Props = {
   open: boolean;
@@ -25,6 +29,25 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
     isLoading,
     error,
   } = useCardComments(card?.id ?? "");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Attachments hooks
+  const {
+    data: attachments,
+    isLoading: attachmentsLoading,
+    error: attachmentsError,
+  } = useCardAttachments(card?.id ?? "");
+  const deleteAttachmentMutation = useDeleteAttachment(card?.id ?? "");
+
+  const handleDeleteAttachment = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await deleteAttachmentMutation.mutateAsync(id);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (!card) return null;
 
   return (
@@ -74,6 +97,20 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
               error={error instanceof Error ? error : null}
             />
           </div>
+        </section>
+
+
+        {/* Attachments Section */}
+        <section className="pt-4 border-t border-slate-100">
+          <div className="font-semibold text-base mb-3">Attachments</div>
+          <UploadAttachmentForm cardId={card.id} />
+          <AttachmentList
+            attachments={attachments}
+            isLoading={attachmentsLoading}
+            error={attachmentsError instanceof Error ? attachmentsError : null}
+            onDelete={handleDeleteAttachment}
+            deletingId={deletingId}
+          />
         </section>
 
         {/* Column Section */}

@@ -13,7 +13,7 @@ const {
 
 // Upload file
 router.post(
-  "/cards/:id/attachments",
+  "/cards/:cardId/attachments",
   authenticate,
   requireBoardRole("owner", "admin", "editor"),
   upload.single("file"),
@@ -22,7 +22,7 @@ router.post(
 
 // Get attachments
 router.get(
-  "/cards/:id/attachments",
+  "/cards/:cardId/attachments",
   authenticate,
   getCardAttachments
 );
