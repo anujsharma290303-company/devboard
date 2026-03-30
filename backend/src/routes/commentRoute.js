@@ -1,9 +1,3 @@
-// Get all comments for a card
-router.get(
-	"/cards/:cardId/comments",
-	authenticate,
-	commentController.getCommentsForCard
-);
 const express = require("express");
 const router = express.Router();
 
@@ -14,6 +8,13 @@ const {
 	addCommentSchema,
 	updateCommentSchema,
 } = require("../validators/commentValidator.js");
+
+// Get all comments for a card
+router.get(
+	"/cards/:cardId/comments",
+	authenticate,
+	commentController.getCommentsForCard
+);
 
 // Add a new comment to a card
 router.post(
