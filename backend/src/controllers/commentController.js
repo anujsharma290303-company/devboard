@@ -1,3 +1,61 @@
+/**
+ * GET /api/cards/:cardId/comments
+ * Get all comments for a card
+ * Headers: Authorization: Bearer <accessToken>
+ */
+exports.getCommentsForCard = async (req, res, next) => {
+  const cardId = req.params.cardId?.trim();
+  const userId = req.user?.id;
+
+  if (!cardId) {
+    return res.status(400).json({ message: "Card ID is required" });
+  }
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    // Verify card exists and user is a board member
+    const card = await prismaClient.card.findUnique({
+      where: { id: cardId },
+      select: {
+        id: true,
+        column: { select: { boardId: true } },
+      },
+    });
+    if (!card) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+    const boardMember = await prismaClient.boardMember.findFirst({
+      where: { boardId: card.column.boardId, userId },
+      select: { id: true },
+    });
+    if (!boardMember) {
+      return res.status(403).json({ message: "Forbidden: Not a board member" });
+    }
+
+    // Fetch comments for the card
+    const comments = await prismaClient.comment.findMany({
+      where: { cardId },
+      orderBy: { createdAt: "asc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            displayName: true,
+            email: true,
+            avatarPath: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    next(error);
+  }
+};
 const prismaClient = require("../config/prisma");
 
 /**

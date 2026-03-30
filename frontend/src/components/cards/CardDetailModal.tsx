@@ -5,6 +5,9 @@ import { Button } from "../ui/Button";
 import { LabelBadge } from "../labels/LabelBadge";
 import { CreateLabelModal } from "../labels/CreateLabelModal";
 import { useState } from "react";
+import { useCardComments } from "../../hooks/useCardComments";
+import { CommentList } from "../comments/CommentList";
+import { AddCommentForm } from "../comments/AddCommentForm";
 
 type Props = {
   open: boolean;
@@ -16,6 +19,12 @@ type Props = {
 
 export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: Props) {
   const [isLabelModalOpen, setLabelModalOpen] = useState(false);
+  // Always call hooks unconditionally
+  const {
+    data: comments,
+    isLoading,
+    error,
+  } = useCardComments(card?.id ?? "");
   if (!card) return null;
 
   return (
@@ -51,6 +60,20 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
           ) : (
             <div className="italic text-slate-400">No description added yet.</div>
           )}
+        </section>
+
+
+        {/* Comments Section */}
+        <section className="pt-4 border-t border-slate-100">
+          <div className="font-semibold text-base mb-3">Comments</div>
+          <div className="flex flex-col gap-4">
+            <AddCommentForm cardId={card.id} />
+            <CommentList
+              comments={comments}
+              isLoading={isLoading}
+              error={error instanceof Error ? error : null}
+            />
+          </div>
         </section>
 
         {/* Column Section */}

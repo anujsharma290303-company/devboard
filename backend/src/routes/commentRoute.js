@@ -1,3 +1,9 @@
+// Get all comments for a card
+router.get(
+	"/cards/:cardId/comments",
+	authenticate,
+	commentController.getCommentsForCard
+);
 const express = require("express");
 const router = express.Router();
 
