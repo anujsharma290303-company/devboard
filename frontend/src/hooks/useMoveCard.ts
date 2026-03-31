@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { moveCard } from "../api/cardApi";
-import type { Board } from "../types/board";
+import type { Board, Column } from "../types/board";
 
 type MoveCardInput = {
   cardId: string;
@@ -15,66 +15,68 @@ export function useMoveCard(boardId: string) {
     mutationFn: ({ cardId, columnId, position }: MoveCardInput) =>
       moveCard(cardId, { columnId, position }),
 
-    onMutate: async ({ cardId, columnId, position }) => {
+    onMutate: async ({ cardId, columnId: destColumnId, position }) => {
+      // Cancel any outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: ["board", boardId] });
 
+      // Snapshot the previous value for rollback
       const previousBoard = queryClient.getQueryData<Board>(["board", boardId]);
 
       if (!previousBoard?.columns) {
         return { previousBoard };
       }
 
-      const updatedBoard: Board = structuredClone(previousBoard);
+      // Deep clone to avoid mutating cached data
+      const updatedColumns: Column[] = JSON.parse(
+        JSON.stringify(previousBoard.columns)
+      );
 
-      let sourceColumnIndex = -1;
-      let sourceCardIndex = -1;
+      // Find source column and card
+      let movedCard = null;
+      let sourceColIdx = -1;
+      let sourceCardIdx = -1;
 
-
-      const columns = updatedBoard.columns ?? [];
-      for (let i = 0; i < columns.length; i++) {
-        const cardIndex = columns[i].cards.findIndex(
-          (card) => card.id === cardId
-        );
-
-        if (cardIndex !== -1) {
-          sourceColumnIndex = i;
-          sourceCardIndex = cardIndex;
+      for (let i = 0; i < updatedColumns.length; i++) {
+        const cardIdx = updatedColumns[i].cards.findIndex((c) => c.id === cardId);
+        if (cardIdx !== -1) {
+          sourceColIdx = i;
+          sourceCardIdx = cardIdx;
           break;
         }
       }
 
-      const destinationColumnIndex = columns.findIndex(
-        (column) => column.id === columnId
-      );
+      const destColIdx = updatedColumns.findIndex((c) => c.id === destColumnId);
 
-      if (sourceColumnIndex === -1 || destinationColumnIndex === -1) {
+      if (sourceColIdx === -1 || destColIdx === -1) {
         return { previousBoard };
       }
 
+      // Remove from source
+      [movedCard] = updatedColumns[sourceColIdx].cards.splice(sourceCardIdx, 1);
 
-      const sourceColumn = columns[sourceColumnIndex];
-      const destinationColumn = columns[destinationColumnIndex];
+      if (!movedCard) return { previousBoard };
 
-      const [movedCard] = sourceColumn.cards.splice(sourceCardIndex, 1);
+      // Insert into destination at correct position
+      updatedColumns[destColIdx].cards.splice(position, 0, movedCard);
 
-      if (!movedCard) {
-        return { previousBoard };
-      }
-
-      destinationColumn.cards.splice(position, 0, movedCard);
-
-      queryClient.setQueryData(["board", boardId], updatedBoard);
+      // Set optimistic data
+      queryClient.setQueryData<Board>(["board", boardId], {
+        ...previousBoard,
+        columns: updatedColumns,
+      });
 
       return { previousBoard };
     },
 
     onError: (_error, _variables, context) => {
+      // Roll back on error
       if (context?.previousBoard) {
         queryClient.setQueryData(["board", boardId], context.previousBoard);
       }
     },
 
     onSettled: () => {
+      // Always refetch after mutation to sync with server
       queryClient.invalidateQueries({ queryKey: ["board", boardId] });
     },
   });
