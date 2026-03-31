@@ -22,10 +22,10 @@ export function AttachmentItem({ attachment, onDelete, deleting }: Props) {
   };
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+    <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/70 backdrop-blur-md px-4 py-3 shadow-lg">
       <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="font-medium text-slate-800 truncate">{attachment.originalName}</span>
-        <span className="text-xs text-slate-500">
+        <span className="font-semibold text-white truncate">{attachment.originalName}</span>
+        <span className="text-xs text-slate-400">
           {formatBytes(attachment.sizeBytes)} &middot;{" "}
           {formatDistanceToNow(new Date(attachment.createdAt), { addSuffix: true })}
         </span>
@@ -34,7 +34,7 @@ export function AttachmentItem({ attachment, onDelete, deleting }: Props) {
         <Button
           type="button"
           variant="secondary"
-          className="text-blue-600 px-2"
+          className="text-indigo-400 hover:text-white px-2 border-transparent hover:border-indigo-500 bg-transparent hover:bg-indigo-500/10 transition-colors"
           onClick={handleDownload}
           title="Open/Download"
         >
@@ -44,7 +44,7 @@ export function AttachmentItem({ attachment, onDelete, deleting }: Props) {
           <Button
             type="button"
             variant="danger"
-            className="text-red-500 px-2"
+            className="text-red-400 hover:text-white px-2 border-transparent hover:border-red-500 bg-transparent hover:bg-red-500/10 transition-colors"
             onClick={() => onDelete(attachment.id)}
             disabled={deleting}
             title="Delete"

@@ -34,69 +34,47 @@ export const Modal: React.FC<ModalProps> = ({
   id,
 }) => {
   const backdropRef = useRef<HTMLDivElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
+    if (!isOpen) return null;
 
-  // ESC key closes modal
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  // Backdrop click closes modal
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === backdropRef.current) onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      ref={backdropRef}
-      className={[
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-200",
-        className,
-      ].join(" ")}
-      style={style}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={id ? `${id}-title` : undefined}
-      onClick={handleBackdropClick}
-    >
+    return (
       <div
-        ref={modalRef}
-        className="bg-white rounded-2xl shadow-2xl border border-slate-100 w-full max-w-lg mx-4 p-6 sm:p-8 animate-[fadeIn_0.2s_ease] overflow-hidden"
-        style={{ maxHeight: "80vh" }}
+        ref={backdropRef}
+        className={["fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-200", className].join(" ")}
+        style={style}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={id ? `${id}-title` : undefined}
+        onClick={handleBackdropClick}
       >
-        <header className="flex items-start justify-between mb-4">
-          {title && (
-            <h2
-              id={id ? `${id}-title` : undefined}
-              className="text-lg font-semibold text-slate-900"
-            >
-              {title}
-            </h2>
-          )}
-          {showCloseButton && (
-            <button
-              type="button"
-              aria-label="Close"
-              onClick={onClose}
-              className="ml-4 text-slate-400 hover:text-slate-700 transition-colors text-2xl leading-none focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-full"
-            >
-              ×
-            </button>
-          )}
-        </header>
-        <div className="overflow-y-auto" style={{ maxHeight: "calc(80vh - 3rem)" }}>
+        <div
+          ref={modalRef}
+          className="bg-slate-900/95 rounded-2xl shadow-2xl border border-white/10 w-full max-w-2xl mx-4 p-6 sm:p-8 animate-[fadeIn_0.2s_ease] overflow-hidden"
+          style={{ maxHeight: "90vh" }}
+        >
+          <header className="flex items-start justify-between mb-4">
+            {title && (
+              <h2
+                id={id ? `${id}-title` : undefined}
+                className="text-lg font-semibold text-white"
+              >
+                {title}
+              </h2>
+            )}
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="ml-2 rounded-full p-2 text-slate-400 hover:bg-slate-800/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                aria-label="Close modal"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </header>
           {children}
         </div>
       </div>
-    </div>
-  );
+    );
 };
-
-export default Modal;

@@ -12,8 +12,8 @@ export function ColumnList({ columns, onCreateColumn, dndEnabled }: ColumnListPr
   if (!columns.length) {
     return <ColumnsEmptyState onCreateColumn={onCreateColumn} />;
   }
-    return ( 
-      <div className="flex min-h-[180px] gap-6 overflow-x-auto pb-2">
+    return (
+      <div className="flex h-full gap-6 overflow-x-auto overflow-y-hidden pb-4 pt-2 snap-x snap-mandatory sm:snap-none">
         {columns.map((column) => (
           <ColumnCard
             key={column.id}
@@ -22,5 +22,5 @@ export function ColumnList({ columns, onCreateColumn, dndEnabled }: ColumnListPr
           />
         ))}
       </div>
-    ); 
+    );
 }

@@ -44,19 +44,19 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav
-      className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 shadow-md backdrop-blur supports-[backdrop-filter]:bg-white/80"
+      className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/80 shadow-md backdrop-blur supports-[backdrop-filter]:bg-slate-950/60"
       aria-label="Main navigation"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-10">
         {/* Left: Brand */}
         <div className="flex items-center gap-4 select-none">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-2xl shadow-sm ring-1 ring-blue-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-700/30 text-2xl shadow-sm ring-1 ring-indigo-600/30">
             📋
           </div>
 
           <div className="flex flex-col leading-tight">
-            <span className="text-lg font-bold text-slate-900">DevBoard</span>
-            <span className="hidden text-xs text-slate-500 sm:block">
+            <span className="text-lg font-bold text-white">DevBoard</span>
+            <span className="hidden text-xs text-slate-400 sm:block">
               Collaborative workspace
             </span>
           </div>
@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
           {isAuthenticated && user && (
             <>
               <span
-                className="hidden max-w-[160px] truncate text-sm font-medium text-slate-700 sm:block"
+                className="hidden max-w-[160px] truncate text-sm font-medium text-slate-300 sm:block"
                 title={user.displayName}
               >
                 {user.displayName}
@@ -80,7 +80,7 @@ export const Navbar: React.FC = () => {
                   aria-haspopup="menu"
                   aria-expanded={isDropdownOpen}
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
-                  className="rounded-full transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-full transition-shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
                   <Avatar
                     initials={user.displayName?.[0] || "U"}
@@ -93,7 +93,7 @@ export const Navbar: React.FC = () => {
                 {isDropdownOpen && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-0 z-50 mt-3 w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-slate-100"
+                    className="absolute right-0 z-50 mt-3 w-44 rounded-2xl border border-white/5 bg-slate-900/95 p-2 shadow-xl ring-1 ring-indigo-900/10"
                     role="menu"
                   >
                     <button
@@ -102,11 +102,11 @@ export const Navbar: React.FC = () => {
                         setIsDropdownOpen(false);
                         navigate("/profile");
                       }}
-                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50"
+                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-slate-200 transition-colors duration-150 hover:bg-slate-800/60"
                     >
                       Profile
                     </button>
-                    <div className="my-1 border-t border-slate-100" />
+                    <div className="my-1 border-t border-slate-800" />
                     <button
                       type="button"
                       onClick={() => {
@@ -114,7 +114,7 @@ export const Navbar: React.FC = () => {
                         logout();
                         navigate("/login");
                       }}
-                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-red-600 transition-colors duration-150 hover:bg-red-50 focus:bg-red-100"
+                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-red-400 transition-colors duration-150 hover:bg-red-900/30 focus:bg-red-900/40"
                     >
                       Logout
                     </button>

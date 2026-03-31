@@ -57,7 +57,6 @@ export function CreateCardModal({ open, onClose, boardId, columnId }: Props) {
           autoFocus
           disabled={isLoading}
           error={error ?? undefined}
-          theme="light"
         />
         <div className="flex justify-end gap-3 mt-2">
           <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>

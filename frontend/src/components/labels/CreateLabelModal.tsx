@@ -13,15 +13,21 @@ type Props = {
   cardId: string;
 };
 
-const COLORS = [
-  "#ef4444", // red
-  "#f59e0b", // amber
-  "#eab308", // yellow
-  "#22c55e", // green
-  "#3b82f6", // blue
-  "#8b5cf6", // violet
-  "#ec4899", // pink
-  "#64748b", // slate
+
+// Gemini's curated palette
+const PRESET_COLORS = [
+  "#ef4444", // Red
+  "#f97316", // Orange
+  "#f59e0b", // Amber
+  "#eab308", // Yellow
+  "#84cc16", // Lime
+  "#22c55e", // Green
+  "#06b6d4", // Cyan
+  "#3b82f6", // Blue
+  "#6366f1", // Indigo
+  "#a855f7", // Purple
+  "#ec4899", // Pink
+  "#f43f5e", // Rose
 ];
 
 export function CreateLabelModal({
@@ -31,7 +37,7 @@ export function CreateLabelModal({
   cardId,
 }: Props) {
   const [name, setName] = useState("");
-  const [color, setColor] = useState(COLORS[0]);
+  const [color, setColor] = useState(PRESET_COLORS[7]); // Default to Blue
   const [error, setError] = useState<string | null>(null);
 
   const createLabelMutation = useCreateLabel();
@@ -42,7 +48,7 @@ export function CreateLabelModal({
   // Reset state only when modal closes, not in effect
   const handleClose = () => {
     setName("");
-    setColor(COLORS[0]);
+    setColor(PRESET_COLORS[7]);
     setError(null);
     createLabelMutation.reset();
     attachLabelMutation.reset();
@@ -97,48 +103,46 @@ export function CreateLabelModal({
           onChange={(e) => setName(e.target.value)}
           disabled={isLoading}
           autoFocus
-          theme="light"
+          placeholder="e.g. Bug, Feature, Urgent"
         />
 
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-slate-700">
-            Color
+        <div>
+          <label className="mb-3 block text-sm font-medium text-slate-300">
+            Select Color
           </label>
-
-          <div className="flex flex-wrap gap-3">
-            {COLORS.map((swatch) => {
-              const isSelected = color === swatch;
-
-              return (
-                <button
-                  key={swatch}
-                  type="button"
-                  onClick={() => setColor(swatch)}
-                  className={`h-8 w-8 rounded-full border-2 transition ${
-                    isSelected
-                      ? "scale-110 border-slate-900"
-                      : "border-transparent hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: swatch }}
-                  aria-label={`Select color ${swatch}`}
-                />
-              );
-            })}
+          <div className="grid grid-cols-6 sm:grid-cols-6 gap-3">
+            {PRESET_COLORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                aria-label={`Select color ${c}`}
+                onClick={() => setColor(c)}
+                className={`w-full aspect-square rounded-lg transition-all duration-200 flex items-center justify-center ${
+                  color === c 
+                    ? "ring-2 ring-offset-2 ring-offset-slate-900 scale-110 shadow-lg z-10" 
+                    : "hover:scale-105 opacity-70 hover:opacity-100"
+                }`}
+                style={{ 
+                  backgroundColor: c, 
+                  boxShadow: color === c ? `0 0 12px ${c}66` : 'none' 
+                }}
+              >
+                {color === c && (
+                  <svg className="w-5 h-5 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
+        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-800">
+          <Button type="button" variant="secondary" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
-
-          <Button type="submit" loading={isLoading} disabled={isLoading}>
-            Create
+          <Button type="submit" loading={isLoading} disabled={!name.trim() || isLoading}>
+            Create Label
           </Button>
         </div>
       </form>
