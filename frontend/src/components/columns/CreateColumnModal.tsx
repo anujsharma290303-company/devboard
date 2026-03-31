@@ -46,7 +46,7 @@ export function CreateColumnModal({ open, onClose, boardId }: Props) {
 
   return (
     <Modal isOpen={open} onClose={onClose} title="Create Column">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6 w-full px-2 sm:px-0">
         <FormError>
           {error || (isError && mutationError instanceof Error ? mutationError.message : undefined)}
         </FormError>

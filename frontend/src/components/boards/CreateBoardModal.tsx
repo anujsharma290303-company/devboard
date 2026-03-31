@@ -33,12 +33,10 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
 
   return (
     <Modal isOpen={open} onClose={onClose} title="Create Board">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6 w-full px-2 sm:px-0">
         <FormError>
           {formError || (error instanceof Error ? error.message : undefined)}
         </FormError>
-
-
         <Input
           name="emoji"
           label="Emoji"
@@ -50,7 +48,6 @@ export function CreateBoardModal(props: CreateBoardModalProps) {
           disabled={isPending}
           theme="light"
         />
-
         <Input
           name="name"
           label="Board Name"

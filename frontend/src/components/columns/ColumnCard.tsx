@@ -25,8 +25,8 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
         flex flex-col
         w-full sm:w-80 max-w-xs shrink-0
         rounded-2xl
-        border border-slate-800/60
-        bg-white/80 dark:bg-slate-900/70 backdrop-blur-xl
+        border border-gray-200
+        bg-white
         shadow-lg
         snap-center sm:snap-align-none
         p-0
@@ -36,14 +36,14 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
       "
     >
       {/* Fixed Header */}
-      <div className="flex-none p-5 pb-4 flex items-center justify-between border-b border-slate-800/40 bg-transparent">
+      <div className="flex-none p-5 pb-4 flex items-center justify-between border-b border-gray-200 bg-transparent">
         <div className="flex items-center gap-2 overflow-hidden">
           <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-          <h3 className="truncate text-base font-semibold text-slate-900 dark:text-white tracking-tight" title={column.title}>
+          <h3 className="truncate text-base font-semibold text-gray-900 tracking-tight" title={column.title}>
             {column.title}
           </h3>
         </div>
-        <span className="flex items-center justify-center h-6 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+        <span className="flex items-center justify-center h-6 px-2 rounded-lg bg-gray-100 text-xs font-medium text-gray-500 border border-gray-200">
           {column.cards.length}
         </span>
       </div>
@@ -60,7 +60,7 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
           >
             <div className="flex flex-col gap-4 min-h-[10px]">
               {column.cards.length === 0 && !snapshot.isDraggingOver ? (
-                <div className="py-10 text-center text-sm font-medium text-slate-400/60 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl bg-white/60 dark:bg-slate-800/40">
+                <div className="py-10 text-center text-sm font-medium text-gray-400/60 border-2 border-dashed border-gray-300 rounded-xl bg-white/60">
                   Drop cards here
                 </div>
               ) : (
@@ -108,7 +108,7 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
         <Button
           type="button"
           variant="secondary"
-          className="w-full justify-start text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white border-transparent hover:border-slate-300 dark:hover:border-slate-700 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 shadow-none transition-colors"
+          className="w-full justify-start text-gray-500 hover:text-indigo-600 border-transparent hover:border-gray-300 bg-transparent hover:bg-gray-100 shadow-none transition-colors"
           onClick={() => setCardModalOpen(true)}
         >
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

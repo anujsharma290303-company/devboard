@@ -13,17 +13,17 @@ export function Textarea({ label, error, className, id, ...props }: TextareaProp
     <div className="w-full">
       <label
         htmlFor={textareaId}
-        className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200 drop-shadow-sm"
+        className="mb-1 block text-sm font-medium text-gray-700"
       >
         {label}
       </label>
       <textarea
         id={textareaId}
         className={clsx(
-          "block w-full rounded-xl border bg-white/10 text-slate-900 dark:bg-slate-800 dark:text-slate-100 px-4 py-2.5 text-base placeholder:text-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-md hover:border-blue-400 dark:hover:border-blue-400",
+          "block w-full rounded-md border border-gray-300 bg-white text-gray-900 px-4 py-2.5 text-base placeholder-gray-400 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-lg hover:border-blue-400",
           error
             ? "border-red-400 focus:ring-red-400 focus:border-red-500"
-            : "border-slate-200 dark:border-slate-600",
+            : "border-gray-300",
           className
         )}
         aria-invalid={!!error}

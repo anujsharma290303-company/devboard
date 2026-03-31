@@ -7,18 +7,14 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   theme?: "dark" | "light";
 };
 
-export function Input({ label, error, className, id, theme = "dark", ...props }: InputProps) {
+export function Input({ label, error, className, id, theme = "light", ...props }: InputProps) {
   const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
     <div className="w-full">
       <label
         htmlFor={inputId}
-        className={
-          theme === "light"
-            ? "mb-1 block text-sm font-medium text-slate-700"
-            : "mb-1 block text-[15px] font-bold text-[#00eaff] drop-shadow-[0_0_6px_#00eaff] tracking-wide"
-        }
+        className="mb-1 block text-sm font-medium text-gray-700"
       >
         {label}
       </label>
@@ -26,10 +22,10 @@ export function Input({ label, error, className, id, theme = "dark", ...props }:
       <input
         id={inputId}
         className={clsx(
-          "block w-full rounded-xl border bg-white/80 text-slate-900 dark:bg-slate-800/90 dark:text-white px-4 py-2.5 text-base placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-md hover:border-blue-400 dark:hover:border-blue-400",
+          "block w-full rounded-md border border-gray-300 bg-white text-gray-900 px-4 py-2.5 text-base placeholder-gray-400 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:shadow-lg hover:border-blue-400",
           error
             ? "border-red-400 focus:ring-red-400 focus:border-red-500"
-            : "border-slate-200 dark:border-slate-600",
+            : "border-gray-300",
           className
         )}
         aria-invalid={!!error}

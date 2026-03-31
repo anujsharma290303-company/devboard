@@ -52,7 +52,7 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
 
   return (
     <Modal isOpen={open} onClose={onClose} title={card.title}>
-      <div className="flex flex-col gap-6 min-w-[320px] max-w-lg">
+      <div className="flex flex-col gap-6 min-w-0 w-full max-w-full sm:max-w-lg px-2 sm:px-0">
         {/* Labels Section */}
         <section>
           <div className="font-semibold text-base mb-1">Labels</div>

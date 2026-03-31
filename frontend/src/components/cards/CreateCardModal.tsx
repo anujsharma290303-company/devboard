@@ -46,7 +46,7 @@ export function CreateCardModal({ open, onClose, boardId, columnId }: Props) {
 
   return (
     <Modal isOpen={open} onClose={handleClose} title="Create Card">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5 sm:gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6 w-full px-2 sm:px-0">
         <FormError>
           {error || (isError && mutationError instanceof Error ? mutationError.message : undefined)}
         </FormError>

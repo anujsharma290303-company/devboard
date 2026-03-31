@@ -6,5 +6,8 @@ export function useBoard(id: string) {
     queryKey: ["board", id],
     queryFn: () => getBoardById(id),
     enabled: !!id,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 }
