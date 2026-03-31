@@ -20,16 +20,30 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
   const [isCardDetailOpen, setCardDetailOpen] = useState(false);
 
   return (
-    <div className="flex w-80 shrink-0 max-h-full flex-col rounded-2xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-xl shadow-xl snap-center sm:snap-align-none">
+    <div
+      className="
+        flex flex-col
+        w-full sm:w-80 max-w-xs shrink-0
+        rounded-2xl
+        border border-slate-800/60
+        bg-white/80 dark:bg-slate-900/70 backdrop-blur-xl
+        shadow-lg
+        snap-center sm:snap-align-none
+        p-0
+        max-h-[90vh]
+        overflow-hidden
+        transition-all duration-200
+      "
+    >
       {/* Fixed Header */}
-      <div className="flex-none p-4 pb-3 flex items-center justify-between border-b border-slate-800/50">
+      <div className="flex-none p-5 pb-4 flex items-center justify-between border-b border-slate-800/40 bg-transparent">
         <div className="flex items-center gap-2 overflow-hidden">
           <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-          <h3 className="truncate text-base font-semibold text-white tracking-tight" title={column.title}>
+          <h3 className="truncate text-base font-semibold text-slate-900 dark:text-white tracking-tight" title={column.title}>
             {column.title}
           </h3>
         </div>
-        <span className="flex items-center justify-center h-6 px-2 rounded-md bg-slate-800 text-xs font-medium text-slate-400 border border-slate-700">
+        <span className="flex items-center justify-center h-6 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
           {column.cards.length}
         </span>
       </div>
@@ -40,13 +54,13 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 overflow-y-auto overflow-x-hidden p-3 transition-colors duration-200 ${
-              snapshot.isDraggingOver ? "bg-indigo-500/5" : ""
+            className={`flex-1 overflow-y-auto overflow-x-hidden p-4 transition-colors duration-200 ${
+              snapshot.isDraggingOver ? "bg-indigo-500/10" : ""
             }`}
           >
-            <div className="flex flex-col gap-3 min-h-[10px]">
+            <div className="flex flex-col gap-4 min-h-[10px]">
               {column.cards.length === 0 && !snapshot.isDraggingOver ? (
-                <div className="py-8 text-center text-sm font-medium text-slate-500/50 border-2 border-dashed border-slate-800/50 rounded-xl">
+                <div className="py-10 text-center text-sm font-medium text-slate-400/60 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl bg-white/60 dark:bg-slate-800/40">
                   Drop cards here
                 </div>
               ) : (
@@ -58,6 +72,7 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          className="transition-shadow duration-150"
                         >
                           <CardItem
                             card={card}
@@ -89,11 +104,11 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
       </Droppable>
 
       {/* Fixed Footer */}
-      <div className="flex-none p-3 pt-0">
+      <div className="flex-none p-4 pt-0">
         <Button
           type="button"
           variant="secondary"
-          className="w-full justify-start text-slate-400 hover:text-white border-transparent hover:border-slate-700 bg-transparent hover:bg-slate-800 shadow-none"
+          className="w-full justify-start text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white border-transparent hover:border-slate-300 dark:hover:border-slate-700 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 shadow-none transition-colors"
           onClick={() => setCardModalOpen(true)}
         >
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

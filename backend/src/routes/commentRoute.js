@@ -24,8 +24,12 @@ router.post(
 	commentController.addComment,
 );
 
+
 // Update a comment (only creator can update)
 router.patch("/comments/:id", authenticate, validate(updateCommentSchema), commentController.updateComment);
+
+// Delete a comment (only creator can delete)
+router.delete("/comments/:id", authenticate, commentController.deleteComment);
 
 // Delete a comment (author or admin/owner can delete)
 router.delete("/comments/:id", authenticate, commentController.deleteComment);

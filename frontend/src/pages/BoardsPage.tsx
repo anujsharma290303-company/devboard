@@ -1,11 +1,82 @@
 
+
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { useBoards } from "../hooks/useBoards";
-import type { Board } from "../types/board";
+import { useCreateBoard } from "../hooks/useCreateBoard";
+import { CreateBoardModal } from "../components/boards/CreateBoardModal";
+import type { Board, CreateBoardPayload } from "../types/board";
 
 export function BoardsPage() {
   const { data: boards, isLoading } = useBoards();
+  const createBoardMutation = useCreateBoard();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [fields, setFields] = useState({
+    emoji: "📋",
+    name: "",
+    description: "",
+  });
+  const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
+  const [errors, setErrors] = useState<{ [k: string]: string }>({});
+  const [formError, setFormError] = useState<string | undefined>(undefined);
+
+  const validate = (values: typeof fields) => {
+    const errs: { [k: string]: string } = {};
+    if (!values.name.trim()) errs.name = "Board name is required";
+    if (values.name.length > 50) errs.name = "Name too long";
+    if (values.description.length > 200) errs.description = "Description too long";
+    return errs;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFields((f) => ({ ...f, [name]: value }));
+  };
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFields((f) => ({ ...f, [name]: value }));
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    setTouched((t) => ({ ...t, [name]: true }));
+    setErrors(validate(fields));
+  };
+
+  const handleOpen = () => {
+    setModalOpen(true);
+    setFields({ emoji: "📋", name: "", description: "" });
+    setTouched({});
+    setErrors({});
+    setFormError(undefined);
+  };
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const errs = validate(fields);
+    setErrors(errs);
+    setTouched({ name: true, description: true });
+    if (Object.keys(errs).length > 0) return;
+    setFormError(undefined);
+    createBoardMutation.mutate(
+      {
+        name: fields.name.trim(),
+        description: fields.description.trim() || undefined,
+        emoji: fields.emoji.trim() || undefined,
+      },
+      {
+        onSuccess: () => {
+          setModalOpen(false);
+        },
+        onError: (err: any) => {
+          setFormError(err?.message || "Failed to create board");
+        },
+      }
+    );
+  };
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.3s_ease]">
@@ -15,13 +86,28 @@ export function BoardsPage() {
           <h1 className="text-3xl font-bold text-white tracking-tight">Your Boards</h1>
           <p className="text-slate-400 mt-1 text-sm">Manage your workspaces, projects, and ideas.</p>
         </div>
-        <Button variant="primary" className="shrink-0 group">
+        <Button variant="primary" className="shrink-0 group" onClick={handleOpen}>
           <svg className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Create Board
         </Button>
       </div>
+
+      <CreateBoardModal
+        open={modalOpen}
+        onClose={handleClose}
+        isPending={createBoardMutation.isPending}
+        handleSubmit={handleSubmit}
+        formError={formError}
+        error={createBoardMutation.error}
+        fields={fields}
+        handleChange={handleChange}
+        handleTextareaChange={handleTextareaChange}
+        handleBlur={handleBlur}
+        touched={touched}
+        errors={errors}
+      />
 
       {/* Loading State */}
       {isLoading && (

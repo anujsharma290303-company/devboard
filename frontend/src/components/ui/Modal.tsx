@@ -34,21 +34,28 @@ export const Modal: React.FC<ModalProps> = ({
   id,
 }) => {
   const backdropRef = useRef<HTMLDivElement>(null);
-    if (!isOpen) return null;
 
-    return (
-      <div
-        ref={backdropRef}
-        className={["fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-200", className].join(" ")}
-        style={style}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={id ? `${id}-title` : undefined}
-        onClick={handleBackdropClick}
-      >
+  // Close modal when clicking on the backdrop only
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === backdropRef.current) {
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={backdropRef}
+      className={["fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-200", className].join(" ")}
+      style={style}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={id ? `${id}-title` : undefined}
+      onClick={handleBackdropClick}
+    >
         <div
-          ref={modalRef}
-          className="bg-slate-900/95 rounded-2xl shadow-2xl border border-white/10 w-full max-w-2xl mx-4 p-6 sm:p-8 animate-[fadeIn_0.2s_ease] overflow-hidden"
+          className="bg-slate-900/95 rounded-2xl shadow-2xl border border-white/10 w-full min-w-[500px] max-w-2xl mx-4 p-6 sm:p-10 animate-[fadeIn_0.2s_ease] overflow-y-auto"
           style={{ maxHeight: "90vh" }}
         >
           <header className="flex items-start justify-between mb-4">

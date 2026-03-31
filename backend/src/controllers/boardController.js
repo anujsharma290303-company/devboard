@@ -54,7 +54,22 @@ exports.createBoard = async (req, res) => {
     const board = await prismaClient.board.create({
       data: boardData,
       include: {
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                email: true,
+                avatarPath: true,
+              },
+            },
+          },
+        },
+        columns: true,
+        _count: {
+          select: { columns: true, members: true },
+        },
       },
     });
 
@@ -133,23 +148,17 @@ exports.getBoardById = async (req, res) => {
     throw error;
   }
 
-  // Query params to optionally include nested data
-  const includeColumns = req.query.columns === "true";
-  const includeMembers = req.query.members === "true";
-
-  const includeData = {};
-  if (includeColumns) {
-    includeData.columns = {
+  // Always include columns, members, and _count by default for frontend compatibility
+  const includeData = {
+    columns: {
       orderBy: { position: "asc" },
       include: {
         cards: {
           orderBy: { position: "asc" },
         },
       },
-    };
-  }
-  if (includeMembers) {
-    includeData.members = {
+    },
+    members: {
       include: {
         user: {
           select: {
@@ -160,32 +169,11 @@ exports.getBoardById = async (req, res) => {
           },
         },
       },
-    };
-  }
-
-  // Default behavior: include both columns and members if no query specified
-  if (!includeColumns && !includeMembers) {
-    includeData.columns = {
-      orderBy: { position: "asc" },
-      include: {
-        cards: {
-          orderBy: { position: "asc" },
-        },
-      },
-    };
-    includeData.members = {
-      include: {
-        user: {
-          select: {
-            id: true,
-            displayName: true,
-            email: true,
-            avatarPath: true,
-          },
-        },
-      },
-    };
-  }
+    },
+    _count: {
+      select: { columns: true, members: true },
+    },
+  };
 
   try {
     const board = await prismaClient.board.findFirst({
@@ -318,6 +306,19 @@ exports.updateBoard = async (req, res) => {
       where: { id: boardId },
       data: updateData,
       include: {
+        columns: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                email: true,
+                avatarPath: true,
+              },
+            },
+          },
+        },
         _count: {
           select: { columns: true, members: true },
         },
