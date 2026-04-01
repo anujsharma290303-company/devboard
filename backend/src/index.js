@@ -19,6 +19,7 @@ const defaultAllowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://devboard-4dco.onrender.com",
+  "https://devboard-b8n.pages.dev",
 ];
 
 const envAllowedOrigins = (process.env.CORS_ORIGINS || "")
