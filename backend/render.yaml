@@ -3,12 +3,23 @@ services:
     name: devboard-backend
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    rootDir: backend
+    buildCommand: npm ci && npx prisma generate
+    startCommand: npm run migrate:deploy && npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      # Add your other environment variables here, e.g.:
-      # - key: DATABASE_URL
-      #   value: <your_database_url>
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 1h
+      - key: REFRESH_TOKEN_EXPIRY_DAYS
+        value: 7
+      - key: UPLOAD_MAX_SIZE
+        value: 10485760
     autoDeploy: true

@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
     "db:push": "prisma db push",
+    "migrate:deploy": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
     "db:studio": "prisma studio",
     "start": "node src/index.js"
   },
