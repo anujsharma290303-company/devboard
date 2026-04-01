@@ -9,12 +9,12 @@ export function CommentItem({ comment }: Props) {
   const formattedDate = new Date(comment.createdAt).toLocaleString();
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 backdrop-blur-md px-4 py-3 shadow-lg">
+    <div className="rainbow-panel rounded-2xl border border-border bg-surface/75 backdrop-blur-md px-4 py-3 shadow-lg">
       <div className="mb-1 flex items-center justify-between">
-        <span className="text-sm font-semibold text-white">{authorName}</span>
-        <span className="text-xs text-slate-400">{formattedDate}</span>
+        <span className="text-sm font-semibold text-text-primary">{authorName}</span>
+        <span className="text-xs text-text-muted">{formattedDate}</span>
       </div>
-      <div className="whitespace-pre-line text-sm text-slate-300">
+      <div className="whitespace-pre-line text-sm text-text-secondary">
         {comment.content}
       </div>
     </div>

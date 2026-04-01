@@ -1,3 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+	/* Brand & Accent */
+	--color-primary: #22d3ee;
+	--color-primary-dark: #0891b2;
+	--color-primary-light: #67e8f9;
+
+	/* Backgrounds */
+	--color-bg: #070b12;
+	--color-surface: #121a26;
+	--color-navbar: #0b1320;
+	--color-sidebar: #09101b;
+	--color-board-sidebar: #101a2a;
+
+	/* Borders */
+	--color-border: #2a3b57;
+
+	/* Text */
+	--color-text-primary: #f6fbff;
+	--color-text-secondary: #d2e7ff;
+	--color-text-muted: #91abc7;
+
+	/* Priority */
+	--color-priority-high: #fb7185;
+	--color-priority-medium: #f59e0b;
+	--color-priority-low: #2dd4bf;
+
+	/* Radius */
+	--radius-xl: 1rem;
+	--radius-2xl: 1.5rem;
+
+	/* Shadows */
+	--shadow-sm: 0 2px 10px 0 rgb(2 8 20 / 0.45);
+	--shadow-md: 0 12px 30px 0 rgb(2 8 20 / 0.58);
+	--shadow-lg: 0 24px 56px 0 rgb(2 8 20 / 0.66);
+}
+
+@layer base {
+	body {
+		font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+		background-color: var(--color-bg);
+		background-image:
+			radial-gradient(circle at 10% 12%, rgb(255 99 132 / 0.26), transparent 32%),
+			radial-gradient(circle at 82% 10%, rgb(255 200 87 / 0.2), transparent 30%),
+			radial-gradient(circle at 15% 87%, rgb(45 212 191 / 0.24), transparent 33%),
+			radial-gradient(circle at 88% 80%, rgb(34 211 238 / 0.24), transparent 34%),
+			linear-gradient(150deg, #05080f 0%, #0c1625 44%, #132237 100%);
+		color: var(--color-text-primary);
+		min-height: 100vh;
+	}
+}
+
+@layer components {
+	.rainbow-panel {
+		background:
+			linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+			linear-gradient(120deg, #ff6384 0%, #ffb347 20%, #ffe566 40%, #34d399 60%, #38bdf8 80%, #818cf8 100%) border-box;
+		border: 1px solid transparent;
+	}
+
+	.rainbow-glow {
+		box-shadow:
+			0 0 0 1px rgb(255 255 255 / 0.04),
+			0 8px 28px rgb(56 189 248 / 0.24),
+			0 14px 42px rgb(52 211 153 / 0.2),
+			0 2px 22px rgb(255 99 132 / 0.2);
+	}
+
+	.rainbow-pill {
+		background-image: linear-gradient(95deg, #ff6384 0%, #ffb347 20%, #ffe566 38%, #34d399 57%, #38bdf8 78%, #818cf8 100%);
+		color: #07111d;
+	}
+}

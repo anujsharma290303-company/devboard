@@ -5,7 +5,7 @@ import type { RegisterPayload, AuthResponse } from "../types/auth";
 export function useRegister() {
   return useMutation<AuthResponse, Error, RegisterPayload>({
     mutationFn: register,
-    onError: (error) => {
+    onError: () => {
       // Optionally log or report error
     },
   });

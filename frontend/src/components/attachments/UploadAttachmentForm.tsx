@@ -15,6 +15,10 @@ export function UploadAttachmentForm({ cardId }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!cardId) {
+      setError("Card is not ready yet. Please reopen the modal and try again.");
+      return;
+    }
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
       setError("Please select a file.");
@@ -33,15 +37,15 @@ export function UploadAttachmentForm({ cardId }: Props) {
       <input
         ref={fileInputRef}
         type="file"
-        className="block w-full text-sm text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        disabled={uploadMutation.isPending}
+        className="block w-full rounded-xl border border-border bg-surface/80 px-3 py-2 text-sm text-text-secondary file:mr-4 file:rounded-lg file:border file:border-primary/40 file:bg-primary/15 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#c996ff] hover:file:bg-primary/25"
+        disabled={uploadMutation.isPending || !cardId}
         aria-label="Upload file"
       />
       {error && <FormError>{error}</FormError>}
       <div className="flex justify-end">
         <Button
           type="submit"
-          disabled={uploadMutation.isPending}
+          disabled={uploadMutation.isPending || !cardId}
           loading={uploadMutation.isPending}
         >
           Upload

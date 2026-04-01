@@ -8,22 +8,21 @@ type ColumnListProps = {
   dndEnabled?: boolean;
 };
 
-export function ColumnList({ columns, onCreateColumn, dndEnabled }: ColumnListProps) {
+export function ColumnList({
+  columns,
+  onCreateColumn,
+  dndEnabled,
+}: ColumnListProps) {
   if (!columns.length) {
     return <ColumnsEmptyState onCreateColumn={onCreateColumn} />;
   }
 
   return (
-    <div
-      className="flex gap-3 pb-4 items-start"
-      style={{ overflowX: "auto", overflowY: "visible" }}
-    >
+    <div className="flex items-start gap-6 pb-2 min-w-max">
       {columns.map((column) => (
-        <ColumnCard
-          key={column.id}
-          column={column}
-          dndEnabled={dndEnabled}
-        />
+        <div key={column.id} className="w-[340px] shrink-0 flex flex-col">
+          <ColumnCard column={column} dndEnabled={dndEnabled} />
+        </div>
       ))}
     </div>
   );

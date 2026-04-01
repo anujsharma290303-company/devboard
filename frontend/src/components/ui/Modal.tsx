@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 export type ModalProps = {
   isOpen: boolean;
@@ -47,7 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div
       ref={backdropRef}
-      className={["fixed inset-0 z-50 flex items-center justify-center bg-gray-900/30 backdrop-blur-sm transition-all duration-200", className].join(" ")}
+      className={["fixed inset-0 z-50 flex items-center justify-center bg-background/75 backdrop-blur-sm transition-all duration-200", className].join(" ")}
       style={style}
       role="dialog"
       aria-modal="true"
@@ -55,14 +55,14 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={handleBackdropClick}
     >
         <div
-          className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full min-w-[350px] max-w-2xl mx-4 p-6 sm:p-10 animate-[fadeIn_0.2s_ease] overflow-y-auto"
+          className="rainbow-panel rainbow-glow rounded-2xl w-full min-w-[350px] max-w-2xl mx-4 p-6 sm:p-10 animate-[fadeIn_0.2s_ease] overflow-y-auto"
           style={{ maxHeight: "90vh" }}
         >
           <header className="flex items-start justify-between mb-4">
             {title && (
               <h2
                 id={id ? `${id}-title` : undefined}
-                className="text-lg font-semibold text-gray-900"
+                className="text-lg font-semibold text-text-primary"
               >
                 {title}
               </h2>
@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="ml-2 rounded-full p-2 text-gray-400 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="ml-2 rounded-full p-2 text-text-secondary hover:bg-primary/15 focus:outline-none focus:ring-2 focus:ring-primary-light"
                 aria-label="Close modal"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -5,7 +5,7 @@ import type { LoginPayload, AuthResponse } from "../types/auth";
 export function useLogin() {
 	return useMutation<AuthResponse, Error, LoginPayload>({
 		mutationFn: login,
-		onError: (error) => {
+		onError: () => {
 			// Optionally log or report error
 		},
 	});

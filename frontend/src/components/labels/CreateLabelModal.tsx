@@ -107,7 +107,7 @@ export function CreateLabelModal({
         />
 
         <div>
-          <label className="mb-3 block text-sm font-medium text-slate-300">
+          <label className="mb-3 block text-sm font-medium text-text-secondary">
             Select Color
           </label>
           <div className="grid grid-cols-6 sm:grid-cols-6 gap-3">
@@ -119,7 +119,7 @@ export function CreateLabelModal({
                 onClick={() => setColor(c)}
                 className={`w-full aspect-square rounded-lg transition-all duration-200 flex items-center justify-center ${
                   color === c 
-                    ? "ring-2 ring-offset-2 ring-offset-slate-900 scale-110 shadow-lg z-10" 
+                    ? "ring-2 ring-offset-2 ring-offset-background scale-110 shadow-lg z-10" 
                     : "hover:scale-105 opacity-70 hover:opacity-100"
                 }`}
                 style={{ 
@@ -137,7 +137,7 @@ export function CreateLabelModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-800">
+        <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border">
           <Button type="button" variant="secondary" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>

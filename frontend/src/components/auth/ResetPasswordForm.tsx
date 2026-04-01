@@ -90,13 +90,13 @@ export function ResetPasswordForm({ token }: Props) {
   if (submitted) {
     return (
       <div className="space-y-5 text-center">
-        <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-4 text-sm font-medium text-green-700">
+        <div className="rounded-xl border border-[#4df7c866] bg-[#4df7c81a] px-4 py-4 text-sm font-medium text-[#8afbe1]">
           Password reset successful!
         </div>
 
         <Link
           to="/login"
-          className="inline-block text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 hover:underline"
+          className="inline-block text-sm font-medium text-primary-light transition-colors hover:text-[#c996ff] hover:underline"
         >
           Return to login
         </Link>

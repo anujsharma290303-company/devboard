@@ -22,7 +22,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
   // Minimalist, bold, and modern Tailwind styling for each variant
   const base =
-    "bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 animate-pulse shadow-sm";
+    "bg-gradient-to-r from-[#231a4a] via-[#38256b] to-[#1f345a] animate-pulse shadow-sm border border-white/5";
   let shapeClass = "";
   switch (variant) {
     case "avatar":

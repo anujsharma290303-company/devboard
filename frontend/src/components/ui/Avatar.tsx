@@ -51,7 +51,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   return (
     <span
       className={[
-        "inline-flex items-center justify-center rounded-full bg-white ring-2 ring-white overflow-hidden select-none",
+        "inline-flex items-center justify-center rounded-full bg-surface ring-2 ring-primary/40 overflow-hidden select-none",
         sizeMap[size || "md"],
         clickable ? "cursor-pointer hover:scale-105 transition-transform duration-150" : "",
         className,
@@ -70,7 +70,7 @@ export const Avatar: React.FC<AvatarProps> = ({
           draggable={false}
         />
       ) : (
-        <span className="w-full h-full flex items-center justify-center bg-blue-600 text-white font-semibold uppercase">
+        <span className="w-full h-full flex items-center justify-center rainbow-pill text-[#081022] font-semibold uppercase">
           {initials}
         </span>
       )}

@@ -31,14 +31,14 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   // Minimalist, bold, and modern Tailwind styling for all variants
   const base =
-    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold select-none transition-colors duration-200";
+    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold select-none transition-colors duration-200 font-sans border border-transparent";
   const variantMap: Record<string, string> = {
-    default: "bg-slate-100 text-slate-700",
-    blue: "bg-blue-100 text-blue-700",
-    green: "bg-emerald-100 text-emerald-700",
-    yellow: "bg-amber-100 text-amber-700",
-    red: "bg-red-100 text-red-700",
-    purple: "bg-purple-100 text-purple-700",
+    default: "bg-surface/80 text-text-secondary border-border",
+    blue: "bg-[#57b2ff1f] text-[#8ed0ff] border-[#57b2ff66]",
+    green: "bg-[#4df7c81a] text-[#7cf9d8] border-[#4df7c866]",
+    yellow: "bg-[#ffe45e1f] text-[#ffe98c] border-[#ffe45e66]",
+    red: "bg-[#ff4d8d1f] text-[#ff80aa] border-[#ff4d8d66]",
+    purple: "bg-[#b06bff1f] text-[#c996ff] border-[#b06bff66]",
   };
   const variantClass = variantMap[variant] || variantMap.default;
   return (

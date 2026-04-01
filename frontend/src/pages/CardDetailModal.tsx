@@ -71,10 +71,10 @@ export function CardDetailModal({
         onClose={onClose}
         title={
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <span className="text-xs font-medium uppercase tracking-wide text-text-muted">
               {columnTitle}
             </span>
-            <span className="text-lg font-semibold text-slate-900">
+            <span className="text-lg font-semibold text-text-primary">
               {displayCard.title}
             </span>
           </div>
@@ -92,10 +92,10 @@ export function CardDetailModal({
               {/* Description */}
               {displayCard.description && (
                 <div>
-                  <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
                     Description
                   </div>
-                  <p className="whitespace-pre-line text-sm text-slate-700">
+                  <p className="whitespace-pre-line text-sm text-text-secondary">
                     {displayCard.description}
                   </p>
                 </div>
@@ -104,7 +104,7 @@ export function CardDetailModal({
               {/* Labels */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                     Labels
                   </span>
                   <Button
@@ -128,13 +128,13 @@ export function CardDetailModal({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs italic text-slate-400">No labels yet.</p>
+                  <p className="text-xs italic text-text-muted">No labels yet.</p>
                 )}
               </div>
 
               {/* Attachments */}
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Attachments
                 </div>
                 <UploadAttachmentForm cardId={card.id} />
@@ -149,7 +149,7 @@ export function CardDetailModal({
 
               {/* Comments */}
               <div>
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Comments
                 </div>
                 <AddCommentForm cardId={card.id} />

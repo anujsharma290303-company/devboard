@@ -17,9 +17,9 @@ export default function RegisterPage() {
   return (
     <AuthLayout title="Create your DevBoard account" subtitle="Get started for free">
       <RegisterForm />
-      <div className="mt-10 text-center text-sm text-slate-300">
+      <div className="mt-10 text-center text-sm text-text-secondary">
         Already have an account?{" "}
-        <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline transition-colors">
+        <Link to="/login" className="font-medium text-primary-light hover:text-[#c996ff] underline-offset-2 hover:underline transition-colors">
           Sign in
         </Link>
       </div>

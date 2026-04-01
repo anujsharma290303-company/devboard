@@ -64,15 +64,15 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-lg py-10">
-      <h1 className="mb-8 text-2xl font-extrabold text-slate-900">Profile</h1>
+      <h1 className="mb-8 text-2xl font-extrabold text-text-primary">Profile</h1>
 
       {/* Display Name */}
-      <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-slate-800">Account Info</h2>
+      <section className="rainbow-panel mb-8 rounded-2xl border border-border bg-surface/80 p-6 shadow-sm">
+        <h2 className="mb-4 text-base font-semibold text-text-primary">Account Info</h2>
         <form onSubmit={handleSaveProfile} className="flex flex-col gap-4">
           {saveError && <FormError>{saveError}</FormError>}
           {saveSuccess && (
-            <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+            <div className="rounded-xl border border-[#4df7c866] bg-[#4df7c81a] px-4 py-2 text-sm font-medium text-[#8afbe1]">
               Profile updated!
             </div>
           )}
@@ -98,12 +98,12 @@ export default function ProfilePage() {
       </section>
 
       {/* Change Password */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-slate-800">Change Password</h2>
+      <section className="rainbow-panel rounded-2xl border border-border bg-surface/80 p-6 shadow-sm">
+        <h2 className="mb-4 text-base font-semibold text-text-primary">Change Password</h2>
         <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
           {pwError && <FormError>{pwError}</FormError>}
           {pwSuccess && (
-            <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700">
+            <div className="rounded-xl border border-[#4df7c866] bg-[#4df7c81a] px-4 py-2 text-sm font-medium text-[#8afbe1]">
               Password changed successfully!
             </div>
           )}

@@ -10,13 +10,13 @@ export default function ResetPasswordPage() {
     return (
       <AuthLayout title="Reset Password" subtitle="Your reset link appears to be invalid.">
         <div className="space-y-5 text-center">
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-medium text-red-700">
+          <div className="rounded-xl border border-[#ff4d8d66] bg-[#ff4d8d1a] px-4 py-4 text-sm font-medium text-[#ff96b9]">
             Invalid or missing reset token.
           </div>
 
           <Link
             to="/forgot-password"
-            className="inline-block text-sm font-medium text-blue-600 transition-colors hover:text-blue-700 hover:underline"
+            className="inline-block text-sm font-medium text-primary-light transition-colors hover:text-[#c996ff] hover:underline"
           >
             Request a new reset link
           </Link>

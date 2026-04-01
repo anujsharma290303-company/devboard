@@ -44,7 +44,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         id={id}
         data-position={position}
         className={[
-          "absolute z-50 px-2.5 py-1 rounded-lg bg-slate-800 text-white text-xs font-medium whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150",
+          "absolute z-50 px-2.5 py-1 rounded-lg rainbow-panel text-text-primary text-xs font-medium whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-150",
           position === "top"
             ? "bottom-full left-1/2 -translate-x-1/2 mb-2"
             : "top-full left-1/2 -translate-x-1/2 mt-2",

@@ -11,8 +11,8 @@ type ColumnCardProps = {
 };
 
 const ACCENT_COLORS = [
-  "#0052cc", "#00875a", "#ff5630", "#6554c0",
-  "#ff8b00", "#00b8d9", "#403294", "#de350b",
+  "#ff4d8d", "#ffb347", "#ffe45e", "#4df7c8",
+  "#57b2ff", "#b06bff", "#ff7a59", "#67e8f9",
 ];
 
 export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
@@ -24,23 +24,26 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
 
   return (
     <div
-      className="flex flex-col w-72 shrink-0 rounded-md bg-[#f4f5f7]"
+      className="rainbow-panel rainbow-glow flex flex-col rounded-2xl bg-surface shadow-md border border-border transition-all duration-200 hover:-translate-y-0.5"
       style={{
         borderTop: `3px solid ${accentColor}`,
-        maxHeight: "calc(100vh - 180px)",
+        minWidth: 260,
+        maxWidth: 400,
+        width: '100%',
+        maxHeight: 'calc(100vh - 180px)',
       }}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between px-3 py-2.5 bg-[#f4f5f7] rounded-t-md">
+      <div className="flex items-center justify-between px-4 py-3 rounded-t-2xl border-b border-border bg-gradient-to-r from-background via-background to-primary/10">
         <div className="flex items-center gap-2 min-w-0">
           <h3
-            className="truncate text-xs font-bold text-slate-600 uppercase tracking-wider"
+            className="truncate text-xs font-bold text-text-primary uppercase tracking-wider"
             title={column.title}
           >
             {column.title}
           </h3>
         </div>
-        <span className="flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full bg-slate-300 text-[10px] font-bold text-slate-600">
+        <span className="rainbow-pill flex-shrink-0 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold shadow-sm">
           {column.cards.length}
         </span>
       </div>
@@ -51,15 +54,15 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 overflow-y-auto px-2 py-1 flex flex-col gap-2 transition-colors duration-150 ${
+            className={`flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3 transition-colors duration-150 ${
               snapshot.isDraggingOver
-                ? "bg-blue-100"
-                : "bg-[#f4f5f7]"
+                ? "bg-primary/10 border-2 border-primary/40"
+                : "bg-surface"
             }`}
-            style={{ minHeight: "80px" }}
+            style={{ minHeight: 80 }}
           >
             {column.cards.length === 0 && !snapshot.isDraggingOver && (
-              <div className="mx-1 rounded border-2 border-dashed border-slate-300 py-8 text-center text-xs text-slate-400">
+              <div className="mx-2 rounded-xl border-2 border-dashed border-border py-8 text-center text-xs text-text-muted">
                 No cards yet
               </div>
             )}
@@ -107,11 +110,11 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
       </Droppable>
 
       {/* Add Card Button */}
-      <div className="px-2 pb-2 pt-1 bg-[#f4f5f7] rounded-b-md">
+      <div className="px-3 pb-3 pt-2 bg-surface rounded-b-2xl border-t border-border">
         <button
           type="button"
           onClick={() => setCardModalOpen(true)}
-          className="flex w-full items-center gap-1.5 rounded px-2 py-2 text-sm text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors duration-150"
+          className="flex w-full items-center gap-1.5 rounded-xl px-2 py-2 text-sm text-text-secondary hover:bg-primary/10 hover:text-text-primary transition-colors duration-150"
         >
           <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

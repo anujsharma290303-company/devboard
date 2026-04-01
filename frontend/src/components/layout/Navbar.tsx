@@ -44,19 +44,19 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav
-      className="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-950/80 shadow-md backdrop-blur supports-[backdrop-filter]:bg-slate-950/60"
+      className="sticky top-0 z-20 w-full border-b border-border bg-navbar/80 shadow-md backdrop-blur supports-[backdrop-filter]:bg-navbar/60 font-sans"
       aria-label="Main navigation"
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-8 lg:px-10">
+      <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Brand */}
-        <div className="flex items-center gap-4 select-none">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-700/30 text-2xl shadow-sm ring-1 ring-indigo-600/30">
+        <div className="flex select-none items-center gap-4">
+          <div className="rainbow-pill rainbow-glow flex h-10 w-10 items-center justify-center rounded-xl text-2xl ring-1 ring-white/20">
             📋
           </div>
 
           <div className="flex flex-col leading-tight">
-            <span className="text-lg font-bold text-white">DevBoard</span>
-            <span className="hidden text-xs text-slate-400 sm:block">
+            <span className="text-lg font-bold text-text-primary">DevBoard</span>
+            <span className="hidden text-xs text-text-muted sm:block">
               Collaborative workspace
             </span>
           </div>
@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
           {isAuthenticated && user && (
             <>
               <span
-                className="hidden max-w-[160px] truncate text-sm font-medium text-slate-300 sm:block"
+                className="hidden max-w-[160px] truncate text-sm font-medium text-text-secondary sm:block"
                 title={user.displayName}
               >
                 {user.displayName}
@@ -80,7 +80,7 @@ export const Navbar: React.FC = () => {
                   aria-haspopup="menu"
                   aria-expanded={isDropdownOpen}
                   onClick={() => setIsDropdownOpen((prev) => !prev)}
-                  className="rounded-full transition-shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="rounded-full transition-shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
                   <Avatar
                     initials={user.displayName?.[0] || "U"}
@@ -93,7 +93,7 @@ export const Navbar: React.FC = () => {
                 {isDropdownOpen && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-0 z-50 mt-3 w-44 rounded-2xl border border-white/5 bg-slate-900/95 p-2 shadow-xl ring-1 ring-indigo-900/10"
+                    className="rainbow-panel absolute right-0 z-50 mt-3 w-44 rounded-2xl p-2 shadow-xl"
                     role="menu"
                   >
                     <button
@@ -102,11 +102,13 @@ export const Navbar: React.FC = () => {
                         setIsDropdownOpen(false);
                         navigate("/profile");
                       }}
-                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-slate-200 transition-colors duration-150 hover:bg-slate-800/60"
+                      className="w-full rounded-xl px-4 py-2 text-left text-sm font-medium text-text-secondary transition-colors duration-150 hover:bg-primary/12 hover:text-text-primary"
                     >
                       Profile
                     </button>
-                    <div className="my-1 border-t border-slate-800" />
+
+                    <div className="my-1 border-t border-border" />
+
                     <button
                       type="button"
                       onClick={() => {
@@ -126,8 +128,7 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* subtle bottom separator */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#57b2ff66] to-transparent" />
     </nav>
   );
 };

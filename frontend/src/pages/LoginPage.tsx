@@ -18,11 +18,11 @@ export default function LoginPage() {
     <AuthLayout title="Sign in to DevBoard" subtitle="Welcome back!">
       <LoginForm />
 
-      <div className="mt-10 text-center text-sm text-slate-300">
+      <div className="mt-10 text-center text-sm text-text-secondary">
         Don&apos;t have an account?{" "}
         <Link
           to="/register"
-          className="font-medium text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline transition-colors"
+          className="font-medium text-primary-light hover:text-[#c996ff] underline-offset-2 hover:underline transition-colors"
         >
           Register
         </Link>

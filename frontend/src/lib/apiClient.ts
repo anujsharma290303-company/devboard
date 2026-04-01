@@ -34,10 +34,16 @@ export async function apiClient<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
 
+  const isFormDataBody =
+    typeof FormData !== "undefined" && body instanceof FormData;
+
   const fetchHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
     ...headers,
   };
+
+  if (!isFormDataBody) {
+    fetchHeaders["Content-Type"] = "application/json";
+  }
 
   if (token) {
     fetchHeaders["Authorization"] = `Bearer ${token}`;
@@ -46,16 +52,23 @@ export async function apiClient<T>(
   const response = await fetch(url, {
     method,
     headers: fetchHeaders,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormDataBody
+      ? (body as FormData)
+      : body
+        ? JSON.stringify(body)
+        : undefined,
     signal,
   });
 
   let data: unknown = null;
 
-  try {
-    data = await response.json();
-  } catch {
-    data = null;
+  const responseText = await response.text();
+  if (responseText) {
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = responseText;
+    }
   }
 
   if (!response.ok) {

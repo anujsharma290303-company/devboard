@@ -30,7 +30,7 @@ export function AddCommentForm({ cardId }: AddCommentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2 mb-4">
       <textarea
-        className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none min-h-[48px]"
+        className="rounded-xl border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:ring-2 focus:ring-primary-light focus:border-primary focus:outline-none shadow-sm resize-none min-h-[48px] transition-all duration-200"
         placeholder="Write a comment…"
         value={text}
         onChange={(e) => setText(e.target.value)}

@@ -11,13 +11,13 @@ type Props = {
 
 export function AttachmentList({ attachments, isLoading, error, onDelete, deletingId }: Props) {
   if (isLoading) {
-    return <div className="text-sm text-slate-400">Loading attachments...</div>;
+    return <div className="text-sm text-text-muted">Loading attachments...</div>;
   }
   if (error) {
-    return <div className="text-sm text-red-500">Failed to load attachments</div>;
+    return <div className="text-sm text-[#ff96b9]">Failed to load attachments</div>;
   }
   if (!attachments || attachments.length === 0) {
-    return <div className="text-sm italic text-slate-400">No attachments yet.</div>;
+    return <div className="text-sm italic text-text-muted">No attachments yet.</div>;
   }
   return (
     <div className="flex flex-col gap-3">

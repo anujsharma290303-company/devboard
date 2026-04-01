@@ -11,7 +11,7 @@ type Props = {
 export function CommentList({ comments, isLoading, error }: Props) {
   if (isLoading) {
     return (
-      <div className="text-sm text-slate-400">
+      <div className="text-sm text-text-muted">
         Loading comments...
       </div>
     );
@@ -19,7 +19,7 @@ export function CommentList({ comments, isLoading, error }: Props) {
 
   if (error) {
     return (
-      <div className="text-sm text-red-500">
+      <div className="text-sm text-[#ff96b9]">
         Failed to load comments
       </div>
     );
@@ -27,7 +27,7 @@ export function CommentList({ comments, isLoading, error }: Props) {
 
   if (!comments || comments.length === 0) {
     return (
-      <div className="text-sm italic text-slate-400">
+      <div className="text-sm italic text-text-muted">
         No comments yet. Start the conversation!
       </div>
     );

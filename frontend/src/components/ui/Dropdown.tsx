@@ -81,7 +81,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         data-align={align}
         tabIndex={-1}
         className={[
-          "absolute z-50 mt-1 min-w-[160px] rounded-xl border border-slate-200 bg-white shadow-lg transition-all duration-150 ease-in-out overflow-hidden",
+          "rainbow-panel rainbow-glow absolute z-50 mt-1 min-w-[160px] rounded-xl border border-border bg-surface/95 shadow-lg transition-all duration-150 ease-in-out overflow-hidden",
           align === "right" ? "right-0" : "left-0",
         ].join(" ")}
       >
@@ -93,7 +93,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             onClick={item.onClick}
             disabled={item.disabled}
             className={[
-              "w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-blue-50 focus:text-blue-700",
+              "w-full text-left px-4 py-2.5 text-sm text-text-secondary hover:bg-primary/10 hover:text-text-primary cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:bg-primary/15 focus:text-text-primary",
               item.className || "",
             ].join(" ")}
             tabIndex={0}
