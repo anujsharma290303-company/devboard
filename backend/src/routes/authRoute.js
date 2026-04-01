@@ -9,7 +9,16 @@ const authenticate = require("../middleware/auth.js");
 const avatarUpload = require("../middleware/avatarUpload.js");
 const { validate } = require("../middleware/validate.js");
 const { loginLimiter, forgotPasswordLimiter } = require("../middleware/rateLimiter.js");
-const { registerSchema, loginSchema, refreshTokenSchema, logoutSchema, forgotPasswordSchema, resetPasswordSchema } = require("../validators/authValidator.js");
+const {
+	registerSchema,
+	loginSchema,
+	refreshTokenSchema,
+	logoutSchema,
+	forgotPasswordSchema,
+	resetPasswordSchema,
+	updateProfileSchema,
+	changePasswordSchema,
+} = require("../validators/authValidator.js");
 /**
  * POST /api/auth/forgot-password
  * Public endpoint to request a password reset link
@@ -56,6 +65,15 @@ router.post("/refresh-token", validate(refreshTokenSchema), authController.refre
  * Body: { refreshToken }
  */
 router.post("/logout", authenticate, validate(logoutSchema), authController.logout);
+
+router.patch("/profile", authenticate, validate(updateProfileSchema), authController.updateProfile);
+
+router.patch(
+	"/change-password",
+	authenticate,
+	validate(changePasswordSchema),
+	authController.changePassword,
+);
 
 // PUT /auth/avatar - upload or replace user avatar
 router.put("/avatar", authenticate, avatarUpload, authController.uploadAvatar);

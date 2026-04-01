@@ -10,7 +10,7 @@ const getNextColumnPosition = async (boardId) => {
   return lastColumn ? lastColumn.position + 1 : 1;
 };
 
-exports.createColumn = async (req, res) => {
+exports.createColumn = async (req, res, next) => {
   const boardId = req.params.boardId?.trim();
   if (!boardId) {
     const error = new Error("Board ID is required");
@@ -51,7 +51,7 @@ exports.createColumn = async (req, res) => {
 };
 
 
-exports.updateColumn = async (req, res) => {
+exports.updateColumn = async (req, res, next) => {
   const userId = req.user?.id;
   if (!userId) {
     const error = new Error("Unauthorized");

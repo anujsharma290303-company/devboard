@@ -1,14 +1,14 @@
-const Joi = require("joi");
+const { z } = require("zod");
 
 exports.createLabelSchema = {
-  body: Joi.object({
-    name: Joi.string().min(1).max(50).required(),
-    color: Joi.string().pattern(/^#[0-9A-Fa-f]{6}$/).required(),
+  body: z.object({
+    name: z.string().min(1).max(50),
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
   }),
 };
 
 exports.addLabelToCardSchema = {
-  body: Joi.object({
-    labelId: Joi.number().integer().required(),
+  body: z.object({
+    labelId: z.number().int(),
   }),
 };

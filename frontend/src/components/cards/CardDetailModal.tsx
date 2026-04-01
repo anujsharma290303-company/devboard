@@ -17,6 +17,7 @@ import { UploadAttachmentForm } from "../attachments/UploadAttachmentForm";
 import { AttachmentList } from "../attachments/AttachmentList";
 import { useEffect } from "react";
 import type { BoardMemberUser } from "../../types/board";
+import { useUpdateCard } from "../../hooks/useUpdateCard";
 
 type Props = {
   open: boolean;
@@ -53,6 +54,7 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
     error: attachmentsError,
   } = useCardAttachments(cardId);
   const deleteAttachmentMutation = useDeleteAttachment(cardId);
+  const updateCardMutation = useUpdateCard(boardId);
 
   // Ensure nested modal state is reset when parent closes.
   useEffect(() => {
@@ -83,9 +85,14 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
     setEditingDesc(true);
     setShowMarkdownPreview(false);
   };
-  const saveDesc = () => {
-    // TODO: Persist to backend
+  const saveDesc = async () => {
+    if (!card) return;
+    await updateCardMutation.mutateAsync({
+      cardId: card.id,
+      payload: { description: descValue },
+    });
     setEditingDesc(false);
+    setShowMarkdownPreview(false);
   };
   const cancelDesc = () => {
     setEditingDesc(false);
@@ -168,7 +175,14 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
                   placeholder="Add a description..."
                 />
                 <div className="flex items-center gap-2 mt-1">
-                  <Button type="button" size="sm" onClick={saveDesc}>Save</Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => void saveDesc()}
+                    loading={updateCardMutation.isPending}
+                  >
+                    Save
+                  </Button>
                   <Button type="button" size="sm" variant="secondary" onClick={cancelDesc}>Cancel</Button>
                   <Button type="button" size="sm" variant="secondary" onClick={() => setShowMarkdownPreview(v => !v)}>
                     {showMarkdownPreview ? "Hide Preview" : "Preview"}

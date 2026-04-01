@@ -31,7 +31,4 @@ router.patch("/comments/:id", authenticate, validate(updateCommentSchema), comme
 // Delete a comment (only creator can delete)
 router.delete("/comments/:id", authenticate, commentController.deleteComment);
 
-// Delete a comment (author or admin/owner can delete)
-router.delete("/comments/:id", authenticate, commentController.deleteComment);
-
 module.exports = router;

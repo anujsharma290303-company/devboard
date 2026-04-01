@@ -1,42 +1,5 @@
-/**
- * DELETE /api/comments/:id
- * Delete a comment (only creator can delete)
- * Headers: Authorization: Bearer <accessToken>
- */
-exports.deleteComment = async (req, res) => {
-  const commentId = req.params.id?.trim();
-  const userId = req.user?.id;
+const prismaClient = require("../config/prisma");
 
-  if (!commentId) {
-    return res.status(400).json({ message: "Comment ID is required" });
-  }
-  if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  try {
-    // Get comment and verify ownership
-    const comment = await prismaClient.comment.findUnique({
-      where: { id: commentId },
-      select: { id: true, userId: true },
-    });
-
-    if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
-
-    // Only the comment creator can delete
-    if (comment.userId !== userId) {
-      return res.status(403).json({ message: "Forbidden: You can only delete your own comments" });
-    }
-
-    await prismaClient.comment.delete({ where: { id: commentId } });
-    return res.status(204).send();
-  } catch (error) {
-    console.error("Error deleting comment:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
 /**
  * GET /api/cards/:cardId/comments
  * Get all comments for a card
@@ -95,7 +58,6 @@ exports.getCommentsForCard = async (req, res, next) => {
     next(error);
   }
 };
-const prismaClient = require("../config/prisma");
 
 /**
  * POST /api/cards/:cardId/comments
@@ -103,7 +65,7 @@ const prismaClient = require("../config/prisma");
  * Headers: Authorization: Bearer <accessToken>
  * Body: { content, parentId? }
  */
-exports.addComment = async (req, res) => {
+exports.addComment = async (req, res, next) => {
   const cardId = req.params.cardId?.trim();
   const { content, parentId } = req.body;
 

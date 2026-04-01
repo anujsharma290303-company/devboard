@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const prismaClient = require("../config/prisma");
 
-exports.inviteMember = async (req, res) => {
+exports.inviteMember = async (req, res, next) => {
   const boardId = req.params.boardId?.trim();
   const { email, role } = req.body;
   const userId = req.user?.id;

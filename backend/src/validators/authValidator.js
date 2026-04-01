@@ -29,6 +29,15 @@ const resetPasswordSchema = z.object({
     newPassword: z.string().min(6).max(100),
 });
 
+const updateProfileSchema = z.object({
+        displayName: z.string().min(3).max(30),
+});
+
+const changePasswordSchema = z.object({
+        currentPassword: z.string().min(6).max(100),
+        newPassword: z.string().min(6).max(100),
+});
+
 module.exports = {
         registerSchema,
         loginSchema,
@@ -36,5 +45,7 @@ module.exports = {
         logoutSchema,
         forgotPasswordSchema,
         resetPasswordSchema,
+                updateProfileSchema,
+                changePasswordSchema,
 };
 

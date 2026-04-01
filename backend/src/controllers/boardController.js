@@ -12,7 +12,7 @@ const prismaClient = require("../config/prisma");
  * POST /api/boards
  * Create a new board and automatically add creator as owner
  */
-exports.createBoard = async (req, res) => {
+exports.createBoard = async (req, res, next) => {
   const { name, description, emoji } = req.body;
   const userId = req.user?.id;
 
@@ -85,7 +85,7 @@ exports.createBoard = async (req, res) => {
  * Fetch all boards where user is a member with optional pagination
  * Query params: limit (1-50, default 20), offset (default 0)
  */
-exports.getBoards = async (req, res) => {
+exports.getBoards = async (req, res, next) => {
   const userId = req.user?.id;
   if (!userId) {
     const error = new Error("Unauthorized");
@@ -133,7 +133,7 @@ exports.getBoards = async (req, res) => {
  * Only returns boards where user is a member
  * Query params: columns=true, members=true (default: both included)
  */
-exports.getBoardById = async (req, res) => {
+exports.getBoardById = async (req, res, next) => {
   const userId = req.user?.id;
   if (!userId) {
     const error = new Error("Unauthorized");
@@ -204,7 +204,7 @@ exports.getBoardById = async (req, res) => {
  * Delete a board (owner only)
  * Cascades delete to columns, cards, and board members
  */
-exports.deleteBoard = async (req, res) => {
+exports.deleteBoard = async (req, res, next) => {
   const userId = req.user?.id;
   if (!userId) {
     const error = new Error("Unauthorized");
@@ -256,7 +256,7 @@ exports.deleteBoard = async (req, res) => {
  * Update board name, description, or emoji (members with appropriate role)
  * Body: { name?, description?, emoji? }
  */
-exports.updateBoard = async (req, res) => {
+exports.updateBoard = async (req, res, next) => {
   const userId = req.user?.id;
   if (!userId) {
     const error = new Error("Unauthorized");

@@ -82,7 +82,7 @@ const sendAuthResponse = ({
  * POST /register
  * Create a new user with hashed password and issue tokens
  */
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   const { displayName, email, password } = req.body;
 
   try {
@@ -123,7 +123,7 @@ exports.register = async (req, res) => {
  * POST /login
  * Authenticate user with email/password and issue tokens
  */
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -164,7 +164,7 @@ exports.login = async (req, res) => {
  * POST /logout
  * Revoke all refresh tokens for the authenticated user
  */
-exports.logout = async (req, res) => {
+exports.logout = async (req, res, next) => {
   const { refreshToken } = req.body;
 
   try {
@@ -183,7 +183,7 @@ exports.logout = async (req, res) => {
  * POST /refresh-token
  * Rotate refresh token and issue new access + refresh tokens
  */
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
   const { refreshToken } = req.body;
 
   try {
@@ -223,7 +223,7 @@ exports.refreshToken = async (req, res) => {
     next(error);
   }
 };
-exports.forgotPassword = async (req, res) => {
+exports.forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
   try {
@@ -262,7 +262,7 @@ exports.forgotPassword = async (req, res) => {
     next(error);
   }
 };
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res, next) => {
   const { token, newPassword } = req.body;
 
   try {
@@ -310,7 +310,7 @@ exports.resetPassword = async (req, res) => {
  * Upload user avatar, update avatarPath in DB, return updated user
  * PUT /api/auth/avatar
  */
-exports.uploadAvatar = async (req, res) => {
+exports.uploadAvatar = async (req, res, next) => {
   try {
     const userId = req.user && req.user.id;
     if (!userId) {
@@ -334,5 +334,93 @@ exports.uploadAvatar = async (req, res) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+/**
+ * PATCH /api/auth/profile
+ * Update authenticated user's profile data
+ */
+exports.updateProfile = async (req, res, next) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    return next(error);
+  }
+
+  const { displayName } = req.body;
+
+  try {
+    const updatedUser = await prismaClient.user.update({
+      where: { id: userId },
+      data: { displayName: displayName.trim() },
+      select: {
+        id: true,
+        displayName: true,
+        email: true,
+        avatarPath: true,
+      },
+    });
+
+    return res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    next(error);
+  }
+};
+
+/**
+ * PATCH /api/auth/change-password
+ * Change password for authenticated user
+ */
+exports.changePassword = async (req, res, next) => {
+  const userId = req.user?.id;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!userId) {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    return next(error);
+  }
+
+  try {
+    const user = await prismaClient.user.findUnique({
+      where: { id: userId },
+      select: { id: true, passwordHash: true },
+    });
+
+    if (!user) {
+      const error = new Error("Unauthorized");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const validCurrentPassword = await bcrypt.compare(
+      currentPassword,
+      user.passwordHash,
+    );
+
+    if (!validCurrentPassword) {
+      const error = new Error("Current password is incorrect");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prismaClient.$transaction([
+      prismaClient.user.update({
+        where: { id: userId },
+        data: { passwordHash: hashedPassword },
+      }),
+      prismaClient.refreshToken.deleteMany({ where: { userId } }),
+    ]);
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Change password error:", error);
+    next(error);
   }
 };

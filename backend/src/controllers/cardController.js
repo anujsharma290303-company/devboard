@@ -10,7 +10,7 @@ const getNextCardPosition = async (columnId) => {
   return (lastCard?.position ?? 0) + 1;
 };
 
-exports.createCard = async (req, res) => {
+exports.createCard = async (req, res, next) => {
   const columnId = req.params.columnId?.trim();
   const { title, description, priority, dueDate, assigneeId } = req.body;
 
