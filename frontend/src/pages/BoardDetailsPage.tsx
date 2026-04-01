@@ -29,19 +29,40 @@ export default function BoardDetailsPage() {
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return;
+    if (!destination) {
+      console.debug("[DND] Drop cancelled: no destination", {
+        cardId: draggableId,
+        source,
+      });
+      return;
+    }
 
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
     ) {
+      console.debug("[DND] Drop ignored: same position", {
+        cardId: draggableId,
+        source,
+        destination,
+      });
       return;
     }
+
+    console.info("[DND] Moving card", {
+      cardId: draggableId,
+      fromColumnId: source.droppableId,
+      fromIndex: source.index,
+      toColumnId: destination.droppableId,
+      toIndex: destination.index,
+    });
 
     moveCardMutation.mutate({
       cardId: draggableId,
       columnId: destination.droppableId,
       position: destination.index,
+      sourceColumnId: source.droppableId,
+      sourceIndex: source.index,
     });
   };
 
@@ -76,14 +97,14 @@ export default function BoardDetailsPage() {
   }
 
   return (
-    <div className="flex min-h-full w-full flex-col gap-4 overflow-hidden px-2 py-2">
+    <div className="flex min-h-full w-full flex-col gap-4 overflow-hidden px-2 py-2 lg:px-3">
       <BoardHeader
         board={board}
         onAddColumn={() => setColumnModalOpen(true)}
       />
 
       {/* Quick Filter Bar (UI only) */}
-      <div className="rainbow-panel mb-2 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3 shadow-sm">
+      <div className="rainbow-panel mb-1 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3 shadow-sm">
         <button
           className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 ${
             filter.myIssues
@@ -135,10 +156,10 @@ export default function BoardDetailsPage() {
         </select>
       </div>
 
-      <div className="w-full flex-1 overflow-x-auto overflow-y-hidden bg-background rounded-2xl shadow-inner border border-border px-1 pt-2 pb-4">
-        <div className="flex min-h-full justify-center">
+      <div className="w-full flex-1 overflow-x-auto overflow-y-hidden bg-background/70 rounded-2xl shadow-inner border border-border px-2 py-3">
+        <div className="flex min-h-full">
           <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex min-w-max flex-row gap-6 pb-2">
+            <div className="flex min-w-max flex-row items-start gap-5 pb-2">
               <ColumnList
                 columns={board.columns ?? []}
                 onCreateColumn={() => setColumnModalOpen(true)}

@@ -6,6 +6,8 @@ type MoveCardInput = {
   cardId: string;
   columnId: string;
   position: number;
+  sourceColumnId: string;
+  sourceIndex: number;
 };
 
 export function useMoveCard(boardId: string) {
@@ -15,7 +17,13 @@ export function useMoveCard(boardId: string) {
     mutationFn: ({ cardId, columnId, position }: MoveCardInput) =>
       moveCard(cardId, { columnId, position }),
 
-    onMutate: async ({ cardId, columnId: destColumnId, position }) => {
+    onMutate: async ({
+      cardId,
+      columnId: destColumnId,
+      position,
+      sourceColumnId,
+      sourceIndex,
+    }) => {
       // Cancel any outgoing refetches so they don't overwrite optimistic update
       await queryClient.cancelQueries({ queryKey: ["board", boardId] });
 
@@ -23,6 +31,12 @@ export function useMoveCard(boardId: string) {
       const previousBoard = queryClient.getQueryData<Board>(["board", boardId]);
 
       if (!previousBoard?.columns) {
+        console.warn("[MOVE_CARD] Missing board cache for optimistic update", {
+          boardId,
+          cardId,
+          destColumnId,
+          position,
+        });
         return { previousBoard };
       }
 
@@ -31,33 +45,57 @@ export function useMoveCard(boardId: string) {
         JSON.stringify(previousBoard.columns)
       );
 
-      // Find source column and card
-      let movedCard = null;
-      let sourceColIdx = -1;
-      let sourceCardIdx = -1;
-
-      for (let i = 0; i < updatedColumns.length; i++) {
-        const cardIdx = updatedColumns[i].cards.findIndex((c) => c.id === cardId);
-        if (cardIdx !== -1) {
-          sourceColIdx = i;
-          sourceCardIdx = cardIdx;
-          break;
-        }
-      }
+      const sourceColIdx = updatedColumns.findIndex((c) => c.id === sourceColumnId);
 
       const destColIdx = updatedColumns.findIndex((c) => c.id === destColumnId);
 
       if (sourceColIdx === -1 || destColIdx === -1) {
+        console.warn("[MOVE_CARD] Source or destination column not found", {
+          boardId,
+          cardId,
+          sourceColumnId,
+          destColumnId,
+        });
         return { previousBoard };
       }
 
-      // Remove from source
-      [movedCard] = updatedColumns[sourceColIdx].cards.splice(sourceCardIdx, 1);
+      const sourceCards = updatedColumns[sourceColIdx].cards;
+      const fallbackSourceIndex = sourceCards.findIndex((c) => c.id === cardId);
+      const sourceCardIdx =
+        sourceIndex >= 0 &&
+        sourceIndex < sourceCards.length &&
+        sourceCards[sourceIndex]?.id === cardId
+          ? sourceIndex
+          : fallbackSourceIndex;
 
-      if (!movedCard) return { previousBoard };
+      let movedCard = null;
+      [movedCard] = sourceCards.splice(sourceCardIdx, 1);
+
+      if (!movedCard) {
+        console.warn("[MOVE_CARD] Card not found in source during optimistic move", {
+          boardId,
+          cardId,
+          sourceColumnId,
+          sourceIndex,
+        });
+        return { previousBoard };
+      }
 
       // Insert into destination at correct position
-      updatedColumns[destColIdx].cards.splice(position, 0, movedCard);
+      const destinationCards = updatedColumns[destColIdx].cards;
+      const safePosition = Math.max(0, Math.min(position, destinationCards.length));
+      destinationCards.splice(safePosition, 0, {
+        ...movedCard,
+        columnId: destColumnId,
+      });
+
+      console.info("[MOVE_CARD] Optimistic move applied", {
+        boardId,
+        cardId,
+        from: sourceColumnId,
+        to: destColumnId,
+        position: safePosition,
+      });
 
       // Set optimistic data
       queryClient.setQueryData<Board>(["board", boardId], {
@@ -73,6 +111,16 @@ export function useMoveCard(boardId: string) {
       if (context?.previousBoard) {
         queryClient.setQueryData(["board", boardId], context.previousBoard);
       }
+
+      console.error("[MOVE_CARD] Failed, rolled back", {
+        boardId,
+        variables: _variables,
+        error: _error,
+      });
+    },
+
+    onSuccess: () => {
+      console.info("[MOVE_CARD] Server move succeeded", { boardId });
     },
 
     onSettled: () => {

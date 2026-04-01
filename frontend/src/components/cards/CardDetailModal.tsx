@@ -102,9 +102,9 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
   return (
     <>
     <Modal isOpen={open} onClose={onClose} title={card.title}>
-      <div className="flex flex-col sm:flex-row gap-8 min-w-0 w-full max-w-full sm:max-w-3xl px-0 sm:px-2">
+      <div className="flex flex-col lg:flex-row gap-5 min-w-0 w-full max-w-full px-0 sm:px-1">
         {/* Left: Tools */}
-        <div className="flex flex-col gap-6 w-full sm:w-64 shrink-0 border-r border-border pr-0 sm:pr-6 bg-background/60 rounded-l-2xl py-4 px-2">
+        <div className="flex flex-col gap-6 w-full lg:w-72 shrink-0 border border-border lg:border-r lg:border-y-0 lg:border-l-0 rounded-2xl lg:rounded-none lg:pr-5 bg-background/60 py-4 px-3">
           {/* Labels Section */}
           <section>
             <div className="font-semibold text-sm mb-1 text-text-secondary">Labels</div>
@@ -142,7 +142,7 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
 
 
         {/* Right: Card Details */}
-        <div className="flex-1 min-w-0 flex flex-col gap-8 py-4 px-2">
+        <div className="flex-1 min-w-0 flex flex-col gap-7 py-2 px-1 sm:px-2">
           {/* Meta Section */}
           <section className="flex flex-wrap gap-6 items-center mb-2">
             <div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
                 )}
               </div>
             ) : card.description && card.description.trim() ? (
-              <div className="text-text-secondary whitespace-pre-line text-base">
+              <div className="text-text-secondary whitespace-pre-line text-sm sm:text-base leading-relaxed">
                 <ReactMarkdown>{card.description}</ReactMarkdown>
               </div>
             ) : (
@@ -231,7 +231,7 @@ export function CardDetailModal({ open, onClose, card, columnTitle, boardId }: P
             <div className="text-text-secondary">{columnTitle || <span className="italic text-text-muted">Unknown</span>}</div>
           </section>
 
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end border-t border-border pt-4">
             <Button type="button" variant="secondary" onClick={onClose}>
               Close
             </Button>

@@ -24,13 +24,12 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
 
   return (
     <div
-      className="rainbow-panel rainbow-glow flex flex-col rounded-2xl bg-surface shadow-md border border-border transition-all duration-200 hover:-translate-y-0.5"
+      className="rainbow-panel rainbow-glow flex flex-col rounded-2xl bg-surface shadow-md border border-border transition-all duration-200"
       style={{
         borderTop: `3px solid ${accentColor}`,
-        minWidth: 260,
-        maxWidth: 400,
+        minWidth: 280,
+        maxWidth: 360,
         width: '100%',
-        maxHeight: 'calc(100vh - 180px)',
       }}
     >
       {/* Column Header */}
@@ -54,12 +53,11 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3 transition-colors duration-150 ${
+            className={`flex-1 min-h-[170px] px-2 py-3 flex flex-col gap-3 transition-colors duration-150 ${
               snapshot.isDraggingOver
-                ? "bg-primary/10 border-2 border-primary/40"
+                ? "bg-primary/8"
                 : "bg-surface"
             }`}
-            style={{ minHeight: 80 }}
           >
             {column.cards.length === 0 && !snapshot.isDraggingOver && (
               <div className="mx-2 rounded-xl border-2 border-dashed border-border py-8 text-center text-xs text-text-muted">
@@ -110,7 +108,7 @@ export function ColumnCard({ column, dndEnabled }: ColumnCardProps) {
       </Droppable>
 
       {/* Add Card Button */}
-      <div className="px-3 pb-3 pt-2 bg-surface rounded-b-2xl border-t border-border">
+      <div className="px-3 pb-3 pt-2 bg-surface/95 rounded-b-2xl border-t border-border">
         <button
           type="button"
           onClick={() => setCardModalOpen(true)}

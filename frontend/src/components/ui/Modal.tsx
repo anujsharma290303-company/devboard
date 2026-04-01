@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export type ModalProps = {
   isOpen: boolean;
@@ -35,6 +36,26 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const backdropRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   // Close modal when clicking on the backdrop only
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === backdropRef.current) {
@@ -44,10 +65,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       ref={backdropRef}
-      className={["fixed inset-0 z-50 flex items-center justify-center bg-background/75 backdrop-blur-sm transition-all duration-200", className].join(" ")}
+      className={[
+        "fixed inset-0 z-[120] flex items-center justify-center bg-background/80 backdrop-blur-sm transition-all duration-200",
+        className,
+      ].join(" ")}
       style={style}
       role="dialog"
       aria-modal="true"
@@ -55,7 +79,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={handleBackdropClick}
     >
         <div
-          className="rainbow-panel rainbow-glow rounded-2xl w-full min-w-[350px] max-w-2xl mx-4 p-6 sm:p-10 animate-[fadeIn_0.2s_ease] overflow-y-auto"
+          className="rainbow-panel rainbow-glow rounded-2xl w-full max-w-5xl mx-4 p-5 sm:p-8 animate-[fadeIn_0.2s_ease] overflow-y-auto"
           style={{ maxHeight: "90vh" }}
         >
           <header className="flex items-start justify-between mb-4">
@@ -83,5 +107,7 @@ export const Modal: React.FC<ModalProps> = ({
           {children}
         </div>
       </div>
-    );
+    ,
+    document.body,
+  );
 };

@@ -389,10 +389,19 @@ exports.moveCard = async (req, res) => {
   }
 
   try {
+    console.info("[MOVE_CARD] Request received", {
+      cardId,
+      targetColumnId,
+      position,
+      userId,
+    });
+
     // Get current card
     const card = await prismaClient.card.findUnique({
       where: { id: cardId },
       select: {
+        id: true,
+        title: true,
         columnId: true,
         column: {
           select: {
@@ -437,39 +446,78 @@ exports.moveCard = async (req, res) => {
       });
     }
 
-    // If moving within same column, just update position
-    if (card.columnId === targetColumnId) {
-      const movedCard = await prismaClient.card.update({
-        where: { id: cardId },
-        data: { position },
-        include: {
-          column: true,
-          assignee: {
-            select: {
-              id: true,
-              displayName: true,
-              email: true,
-            },
-          },
-          createdBy: {
-            select: {
-              id: true,
-              displayName: true,
-              email: true,
-            },
-          },
-        },
+    await prismaClient.$transaction(async (tx) => {
+      const sourceCards = await tx.card.findMany({
+        where: { columnId: card.columnId },
+        select: { id: true },
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
       });
-      return res.status(200).json(movedCard);
-    }
 
-    // Moving to different column - update columnId and position
-    const movedCard = await prismaClient.card.update({
+      const sourceIds = sourceCards
+        .map((sourceCard) => sourceCard.id)
+        .filter((sourceCardId) => sourceCardId !== cardId);
+
+      if (card.columnId === targetColumnId) {
+        const insertIndex = Math.max(0, Math.min(position, sourceIds.length));
+        const reorderedIds = [
+          ...sourceIds.slice(0, insertIndex),
+          cardId,
+          ...sourceIds.slice(insertIndex),
+        ];
+
+        await Promise.all(
+          reorderedIds.map((id, index) =>
+            tx.card.update({
+              where: { id },
+              data: { position: index },
+            }),
+          ),
+        );
+
+        return;
+      }
+
+      const destinationCards = await tx.card.findMany({
+        where: { columnId: targetColumnId },
+        select: { id: true },
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+      });
+
+      const destinationIds = destinationCards.map((destinationCard) => destinationCard.id);
+      const insertIndex = Math.max(0, Math.min(position, destinationIds.length));
+
+      const reorderedDestinationIds = [
+        ...destinationIds.slice(0, insertIndex),
+        cardId,
+        ...destinationIds.slice(insertIndex),
+      ];
+
+      await tx.card.update({
+        where: { id: cardId },
+        data: { columnId: targetColumnId },
+      });
+
+      await Promise.all(
+        sourceIds.map((id, index) =>
+          tx.card.update({
+            where: { id },
+            data: { position: index },
+          }),
+        ),
+      );
+
+      await Promise.all(
+        reorderedDestinationIds.map((id, index) =>
+          tx.card.update({
+            where: { id },
+            data: { position: index },
+          }),
+        ),
+      );
+    });
+
+    const movedCard = await prismaClient.card.findUnique({
       where: { id: cardId },
-      data: {
-        columnId: targetColumnId,
-        position,
-      },
       include: {
         column: true,
         assignee: {
@@ -487,6 +535,14 @@ exports.moveCard = async (req, res) => {
           },
         },
       },
+    });
+
+    console.info("[MOVE_CARD] Move persisted", {
+      cardId,
+      fromColumnId: card.columnId,
+      toColumnId: targetColumnId,
+      requestedPosition: position,
+      finalPosition: movedCard?.position,
     });
 
     return res.status(200).json(movedCard);
