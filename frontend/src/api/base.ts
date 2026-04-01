@@ -1,1 +1,3 @@
-export const API_BASE = "https://devboard-4dco.onrender.com/api";
+import { API_BASE_URL } from "../lib/apiClient";
+
+export const API_BASE = API_BASE_URL;

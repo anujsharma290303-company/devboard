@@ -371,7 +371,8 @@ exports.updateCard = async (req, res) => {
 
 exports.moveCard = async (req, res) => {
   const cardId = req.params.id?.trim();
-  const { targetColumnId, position } = req.body;
+  const targetColumnId = req.body?.targetColumnId?.trim?.() ?? req.body?.targetColumnId;
+  const position = req.body?.position;
 
   if (!cardId) {
     return res.status(400).json({ message: "Card ID is required" });

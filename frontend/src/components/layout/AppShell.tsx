@@ -32,7 +32,7 @@ export function AppShell() {
         <main
           className={
             isBoardDetail
-              ? "flex-1 flex flex-col overflow-x-auto px-0 py-0"
+              ? "flex-1 flex flex-col overflow-hidden px-0 py-0"
               : "flex-1 flex flex-col mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
           }
           style={{

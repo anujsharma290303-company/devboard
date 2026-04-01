@@ -11,15 +11,22 @@ function requireBoardRole(...allowedRoles) {
 
       let boardId = null;
 
+      const normalizedParams = {
+        boardId: typeof req.params?.boardId === "string" ? req.params.boardId.trim() : null,
+        cardId: typeof req.params?.cardId === "string" ? req.params.cardId.trim() : null,
+        id: typeof req.params?.id === "string" ? req.params.id.trim() : null,
+        columnId: typeof req.params?.columnId === "string" ? req.params.columnId.trim() : null,
+      };
+
       // ✅ Case 1: Direct boardId
-      if (req.params.boardId) {
-        boardId = req.params.boardId;
+      if (normalizedParams.boardId) {
+        boardId = normalizedParams.boardId;
       }
 
       // ✅ Case 2: cardId → column → board
-      else if (req.params.cardId) {
+      else if (normalizedParams.cardId) {
         const card = await prismaClient.card.findUnique({
-          where: { id: req.params.cardId },
+          where: { id: normalizedParams.cardId },
           include: {
             column: {
               select: { boardId: true },
@@ -34,9 +41,36 @@ function requireBoardRole(...allowedRoles) {
         boardId = card.column.boardId;
       }
 
-      // ✅ Case 3: columnId or id → column → board
-      else if (req.params.columnId || req.params.id) {
-        const columnId = req.params.columnId || req.params.id;
+      // ✅ Case 3: generic :id can be cardId or columnId depending on route
+      else if (normalizedParams.id) {
+        const card = await prismaClient.card.findUnique({
+          where: { id: normalizedParams.id },
+          include: {
+            column: {
+              select: { boardId: true },
+            },
+          },
+        });
+
+        if (card) {
+          boardId = card.column.boardId;
+        } else {
+          const column = await prismaClient.column.findUnique({
+            where: { id: normalizedParams.id },
+            select: { boardId: true },
+          });
+
+          if (!column) {
+            return res.status(404).json({ message: "Resource not found" });
+          }
+
+          boardId = column.boardId;
+        }
+      }
+
+      // ✅ Case 4: explicit columnId → column → board
+      else if (normalizedParams.columnId) {
+        const columnId = normalizedParams.columnId;
 
         const column = await prismaClient.column.findUnique({
           where: { id: columnId },
